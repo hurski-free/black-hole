@@ -1,0 +1,15 @@
+export const GRAVITATIONAL_CONSTANT = 0.001;
+
+export const PARTICLE_RADIUS = 1;
+
+export const STAR_MIN_SIZE = 15;
+export const STAR_MAX_SIZE = 70;
+export const STAR_MAX_MINUS_MIN = STAR_MAX_SIZE - STAR_MIN_SIZE;
+
+export const BLACK_HOLE_POOL_CAPACITY = 1000;
+export const STAR_POOL_CAPACITY = 5000;
+export const PARTICLE_POOL_CAPACITY = 20000;
+
+export const INITIAL_STAR_COUNT = 2;
+export const INITIAL_BLACK_HOLE_COUNT = 1;
+export const INITIAL_BLACK_HOLE_RADIUS = 10;

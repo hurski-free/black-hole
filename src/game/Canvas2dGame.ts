@@ -1,8 +1,9 @@
+import { random } from "./math";
 import { BlackHole } from "./objects/class/BlackHole";
 import { ObjectPool } from "./objects/class/ObjectPool";
 import { Particle } from "./objects/class/Particle";
 import { Star } from "./objects/class/Star";
-import { BLACK_HOLE_POOL_CAPACITY, PARTICLE_POOL_CAPACITY, STAR_POOL_CAPACITY } from "./objects/const";
+import { BLACK_HOLE_GRAVITY_COEFFICIENT, BLACK_HOLE_POOL_CAPACITY, FIRST_BLACK_HOLE_TIME_REMAINS, INITIAL_BLACK_HOLE_RADIUS, NEXT_BLACK_HOLE_TIME_REMAINS, PARTICLE_POOL_CAPACITY, STAR_POOL_CAPACITY } from "./objects/const";
 
 type GameBindedFunction = (this: Canvas2dGame) => void;
 
@@ -28,6 +29,12 @@ export class Canvas2dGame {
 
   private animationFrameId: number = 0;
   private _gameState: GameState = 'wait_for_start';
+
+  private _blackHoleTimeRemains: number = 0;
+  private _prevTimestamp: DOMHighResTimeStamp = 0;
+
+  private _width: number = 0;
+  private _height: number = 0;
 
   constructor(cfg: IGameConfig) {
     if (!(cfg.ctx instanceof CanvasRenderingContext2D)) {
@@ -60,6 +67,22 @@ export class Canvas2dGame {
     return this._particles;
   }
 
+  get width() {
+    return this._width;
+  }
+
+  get height() {
+    return this._height;
+  }
+
+  get blackHoleTimeRemains() {
+    return this._blackHoleTimeRemains;
+  }
+
+  get gameState() {
+    return this._gameState;
+  }
+
   start() {
     console.log('start', this._gameState);
     if (this._gameState === 'wait_for_start') {
@@ -67,32 +90,59 @@ export class Canvas2dGame {
   
       const star1 = this.stars.getObject();
       const star2 = this.stars.getObject();
-      const star3 = this.stars.getObject();
 
       star1.x = 200;
       star1.y = 200;
+      star1.velocityX = 0;
+      star1.velocityY = 0;
+      star1.accelerationX = 0;
+      star1.accelerationY = 0;
       star1.radius = 70;
-      star1.mass = 70;
 
-      star2.x = 400;
-      star2.y = 400;
+      star2.x = 100;
+      star2.y = 600;
+      star2.velocityX = 0;
+      star2.velocityY = 0;
+      star2.accelerationX = 0;
+      star2.accelerationY = 0;
       star2.radius = 40;
-      star2.mass = 40;
+      
+      // const blackHole = this.blackHoles.getObject();
+      // blackHole.x = 500;
+      // blackHole.y = 500;
+      // blackHole.radius = 20;
 
-      star3.x = 400;
-      star3.y = 300;
-      star3.radius = 20;
-      star3.mass = 20;
+      this._blackHoleTimeRemains = FIRST_BLACK_HOLE_TIME_REMAINS * 10000;
+      // this._blackHoleTimeRemains = FIRST_BLACK_HOLE_TIME_REMAINS;
 
-      this.tick();
+      this.tick(performance.now());
     }
   }
 
-  tick() {
+  tick(now: DOMHighResTimeStamp) {
     if (this._gameState === 'running') {
-      this.engineFunction();
-      this.renderFunction();
-      this.animationFrameId = requestAnimationFrame(() => this.tick());
+      const deltaTime = now - this._prevTimestamp;
+      this._prevTimestamp = now;
+
+      if (deltaTime > 200) {
+        // ignore cycle
+        this.animationFrameId = requestAnimationFrame((now) => this.tick(now));
+      } else {
+        this._blackHoleTimeRemains -= deltaTime; // 16ms
+
+        if (this._blackHoleTimeRemains <= 0) {
+          const blackHole = this.blackHoles.getObject();
+          blackHole.x = random(0, this._width);
+          blackHole.y = random(0, this._height);
+          blackHole.radius = INITIAL_BLACK_HOLE_RADIUS;
+
+          this._blackHoleTimeRemains = NEXT_BLACK_HOLE_TIME_REMAINS;
+        }
+  
+        this.engineFunction();
+        this.renderFunction();
+        this.animationFrameId = requestAnimationFrame((now) => this.tick(now));
+      }
     }
   }
 
@@ -107,7 +157,7 @@ export class Canvas2dGame {
   resume() {
     if (this._gameState === 'paused') {
       this._gameState = 'running';
-      this.tick();
+      this.tick(performance.now());
     }
   }
 
@@ -116,11 +166,24 @@ export class Canvas2dGame {
       this._gameState = 'wait_for_start';
       cancelAnimationFrame(this.animationFrameId);
       this.animationFrameId = 0;
+      this.clearObjects();
+      this.renderFunction();
     }
   }
 
   restart() {
     this.stop();
     this.start();
+  }
+
+  resizeCanvas(width: number, height: number) {
+    this._width = width;
+    this._height = height;
+  }
+
+  private clearObjects() {
+    this.blackHoles.clear();
+    this.stars.clear();
+    this.particles.clear();
   }
 }

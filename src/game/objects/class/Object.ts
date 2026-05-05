@@ -1,4 +1,4 @@
-import { GRAVITATIONAL_CONSTANT } from "../const";
+import { COMMON_GRAVITATIONAL_CONSTANT } from "../const";
 
 /**
  * states:
@@ -25,18 +25,8 @@ export class Object {
   accelerationX: number = 0;
   accelerationY: number = 0;
 
-  private _mass: number = 0;
+  objectGravityCoefficient: number = 0;
   computedImpactingMass: number = 0;
-
-
-  set mass(value: number) {
-    this._mass = value;
-    this.computedImpactingMass = value * GRAVITATIONAL_CONSTANT;
-  }
-
-  get mass(): number {
-    return this._mass;
-  }
 
   update() {
     this.velocityX += this.accelerationX;
@@ -46,5 +36,16 @@ export class Object {
     this.y += this.velocityY;
 
     this.radius += this.deltaRadius;
+    this.deltaRadius = 0;
+    this.computeImpactingMass();
+
+    this.state = 'exist';
+  }
+
+  /**
+   * Use it after force set radius
+   */
+  computeImpactingMass() {
+    this.computedImpactingMass = this.radius * this.objectGravityCoefficient * COMMON_GRAVITATIONAL_CONSTANT;
   }
 }

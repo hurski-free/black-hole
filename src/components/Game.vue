@@ -45,6 +45,8 @@ function applyCanvasSize() {
     if (ctx) {
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
     }
+
+    gameRef.value?.resizeCanvas(w, h)
   } else {
     const gl = glRef ?? (canvas.getContext('webgl2') as WebGL2RenderingContext | null) ?? canvas.getContext('webgl')
     if (gl) {
@@ -77,6 +79,49 @@ function initCanvas2dGame() {
   }
 }
 
+function togglePauseResume() {
+  if (props.mode !== 'canvas2d') return
+
+  const game = gameRef.value
+  if (!game) return
+
+  if (game.gameState === 'running') {
+    game.pause()
+  } else if (game.gameState === 'paused') {
+    game.resume()
+  }
+}
+
+function toggleStartStop() {
+  if (props.mode !== 'canvas2d') return
+
+  const game = gameRef.value
+  if (!game) return
+
+  if (game.gameState === 'wait_for_start') {
+    game.start()
+  } else {
+    game.stop()
+  }
+}
+
+function restartGame() {
+  if (props.mode !== 'canvas2d') return
+  gameRef.value?.restart()
+}
+
+function onKeyDown(event: KeyboardEvent) {
+  if (props.mode !== 'canvas2d') return
+
+  if (event.code === 'Space') {
+    event.preventDefault()
+    togglePauseResume()
+  } else if (event.code === 'Enter') {
+    event.preventDefault()
+    toggleStartStop()
+  }
+}
+
 function teardownGame() {
   gameRef.value?.stop()
   gameRef.value = null
@@ -84,6 +129,8 @@ function teardownGame() {
 }
 
 onMounted(() => {
+  window.addEventListener('keydown', onKeyDown)
+
   nextTick(() => {
     applyCanvasSize()
 
@@ -117,6 +164,7 @@ onMounted(() => {
 })
 
 onBeforeUnmount(() => {
+  window.removeEventListener('keydown', onKeyDown)
   resizeObserver?.disconnect()
   resizeObserver = null
   teardownGame()
@@ -130,6 +178,15 @@ onBeforeUnmount(() => {
       <span class="mode-label">
         {{ mode === 'canvas2d' ? 'Canvas 2D' : 'WebGL' }}
       </span>
+      <button type="button" class="toolbar-btn" :disabled="mode !== 'canvas2d'" @click="togglePauseResume">
+        Pause / Resume (Space)
+      </button>
+      <button type="button" class="toolbar-btn" :disabled="mode !== 'canvas2d'" @click="toggleStartStop">
+        Stop / Start (Enter)
+      </button>
+      <button type="button" class="toolbar-btn" :disabled="mode !== 'canvas2d'" @click="restartGame">
+        Restart
+      </button>
     </header>
     <div ref="rootRef" class="canvas-wrap">
       <canvas ref="canvasRef" class="game-canvas" />
@@ -166,6 +223,26 @@ onBeforeUnmount(() => {
 .back-btn:hover {
   border-color: var(--accent-dim);
   color: var(--text-h);
+}
+
+.toolbar-btn {
+  font: inherit;
+  cursor: pointer;
+  padding: 0.35rem 0.75rem;
+  border-radius: 0.35rem;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+}
+
+.toolbar-btn:hover:not(:disabled) {
+  border-color: var(--accent-dim);
+  color: var(--text-h);
+}
+
+.toolbar-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
 }
 
 .mode-label {

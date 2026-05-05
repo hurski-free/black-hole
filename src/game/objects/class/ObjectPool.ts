@@ -44,8 +44,13 @@ export class ObjectPool<T extends Object> {
 
     while (i < this._active_count) {
       if (this.pool[i].state === 'deleted') {
-        this.pool[i] = this.pool[this._active_count - 1];
-        this.pool[this._active_count - 1].state = 'free';
+        const lastIndex = this._active_count - 1;
+        const deletedObject = this.pool[i];
+        const lastObject = this.pool[lastIndex];
+
+        this.pool[i] = lastObject;
+        this.pool[lastIndex] = deletedObject;
+        deletedObject.state = 'free';
 
         this._active_count--;
       } else {

@@ -12,3 +12,10 @@ export function distanceByDelta(deltaX: number, deltaY: number) {
 export function random(min: number, max: number) {
   return Math.random() * (max - min) + min;
 }
+
+export function circleSquare(radius: number) {
+  return Math.PI * radius * radius;
+}
+
+export const PI_MUL_2 = 2 * Math.PI;
+export const PI_DIV_2 = Math.PI / 2;

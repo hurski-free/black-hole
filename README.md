@@ -6,4 +6,4 @@ Space simulation with typo commands
 
 | Environment | URL |
 |-------------|-----|
-| **Production** | [https://space-and-commands.onrender.com/](https://space-and-commands.onrender.com/) |
+| **Production** | [https://black-hole.onrender.com/](https://black-hole.onrender.com/) |

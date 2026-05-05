@@ -100,7 +100,7 @@ export class Canvas2dGame {
       star1.radius = 70;
 
       star2.x = 100;
-      star2.y = 600;
+      star2.y = 500;
       star2.velocityX = 0;
       star2.velocityY = 0;
       star2.accelerationX = 0;

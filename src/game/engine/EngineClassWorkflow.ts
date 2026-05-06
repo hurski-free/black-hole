@@ -8,7 +8,7 @@ import {
   STAR_COLLISION_COEFFICIENT,
   PARTICLES_AFTER_STAR_EXP_MIN_V,
   PARTICLES_AFTER_STAR_EXP_MAX_V,
-  BLACK_HOLE_STAR_ABSORB_DISTANCE_MULTIPLIER,
+  BLACK_HOLE_STAR_ABSORB_SIZE_MULTIPLIER,
   BLACK_HOLE_STAR_ABSORB_PARTICLES_GENERATE_MULTIPLIER,
   BLACK_HOLE_STAR_ABSORB_PARTICLES_MIN_R,
   BLACK_HOLE_STAR_ABSORB_PARTICLES_MAX_R,
@@ -76,15 +76,22 @@ export class EngineClassWorkflow implements IEngine<BlackHole, Star, Particle> {
 
         let distance = Math.hypot(dx, dy);
 
+        // absorb particles from starJ to blackHoleI
         if (starJ.state === 2 && !starJ.isSupernova) {
-          const absorbDistance = Math.max(blackHoleI.radius * BLACK_HOLE_STAR_ABSORB_DISTANCE_MULTIPLIER, BLACK_HOLE_STAR_ABSORB_DISTANCE_MIN);
+          const absorbDistance = BLACK_HOLE_STAR_ABSORB_DISTANCE_MIN + blackHoleI.radius * BLACK_HOLE_STAR_ABSORB_SIZE_MULTIPLIER;
+
+          // star inside absorb distance
           if (distance < absorbDistance) {
+
             const absorbCoefficient = 1 - distance / absorbDistance;
 
             const countParticles = Math.floor(starJ.radius * absorbCoefficient * BLACK_HOLE_STAR_ABSORB_PARTICLES_GENERATE_MULTIPLIER);
-            const deltaRadius = starJ.radius * absorbCoefficient * BLACK_HOLE_STAR_ABSORB_RADIUS_MULTIPLIER;
+            const deltaRadius = distance + blackHoleI.radius + starJ.radius < 0
+              ? starJ.radius * 1.1
+              : starJ.radius * absorbCoefficient * BLACK_HOLE_STAR_ABSORB_RADIUS_MULTIPLIER;
 
             if (deltaRadius > starJ.radius || starJ.radius < STAR_DISAPPEAR_RADIUS) {
+              // console.log('starJ is deleted');
               starJ.state = 3;
             } else {
               starJ.deltaRadius -= deltaRadius;
@@ -113,8 +120,8 @@ export class EngineClassWorkflow implements IEngine<BlackHole, Star, Particle> {
               particle.x = starJ.x + random(BLACK_HOLE_STAR_ABSORB_PARTICLES_MIN_R, BLACK_HOLE_STAR_ABSORB_PARTICLES_MAX_R) * starJ.radius * Math.cos(angle);
               particle.y = starJ.y + random(BLACK_HOLE_STAR_ABSORB_PARTICLES_MIN_R, BLACK_HOLE_STAR_ABSORB_PARTICLES_MAX_R) * starJ.radius * Math.sin(angle);
 
-              particle.velocityX = ndx;
-              particle.velocityY = ndy;
+              particle.velocityX = starJ.velocityX;
+              particle.velocityY = starJ.velocityY;
 
               particle.accelerationX = ndx;
               particle.accelerationY = ndy;

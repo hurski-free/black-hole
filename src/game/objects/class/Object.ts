@@ -55,6 +55,8 @@ export class GameObject {
     this.computeImpactingMass();
 
     this.state = 2;
+    this.accelerationX = 0;
+    this.accelerationY = 0;
   }
 
   /**

@@ -7,14 +7,14 @@ import { ObjectPool } from "./objects/class/ObjectPool";
 import { Particle } from "./objects/class/Particle";
 import { Star } from "./objects/class/Star";
 import { 
-  BLACK_HOLE_POOL_CAPACITY, 
+  CANVAS2D_BLACK_HOLE_POOL_CAPACITY, 
   FIRST_BLACK_HOLE_TIME_REMAINS, 
   INITIAL_BLACK_HOLE_RADIUS, 
   NEXT_BLACK_HOLE_TIME_REMAINS, 
-  PARTICLE_POOL_CAPACITY, 
+  CANVAS2D_PARTICLE_POOL_CAPACITY, 
   STAR_HOVER_RADIUS_INC, 
   STAR_MIN_RADIUS, 
-  STAR_POOL_CAPACITY 
+  CANVAS2D_STAR_POOL_CAPACITY 
 } from "./objects/const";
 import { Canvas2dRender } from "./render/Canvas2dRender";
 
@@ -34,9 +34,9 @@ export class Canvas2dGame extends Game<BlackHole, Star, Particle> {
       throw new Error('ctx must be a CanvasRenderingContext2D');
     }
 
-    const blackHoles = new ObjectPool<BlackHole>(BLACK_HOLE_POOL_CAPACITY, () => new BlackHole());
-    const stars = new ObjectPool<Star>(STAR_POOL_CAPACITY, () => new Star());
-    const particles = new ObjectPool<Particle>(PARTICLE_POOL_CAPACITY, () => new Particle());
+    const blackHoles = new ObjectPool<BlackHole>(CANVAS2D_BLACK_HOLE_POOL_CAPACITY, () => new BlackHole());
+    const stars = new ObjectPool<Star>(CANVAS2D_STAR_POOL_CAPACITY, () => new Star());
+    const particles = new ObjectPool<Particle>(CANVAS2D_PARTICLE_POOL_CAPACITY, () => new Particle());
 
     super({
       engine: new EngineClassWorkflow(),

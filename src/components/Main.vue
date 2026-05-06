@@ -18,6 +18,10 @@ function startCanvas2d() {
   activeMode.value = 'canvas2d'
 }
 
+function startWebgl() {
+  activeMode.value = 'webgl'
+}
+
 function leaveGame() {
   activeMode.value = null
 }
@@ -26,45 +30,54 @@ function leaveGame() {
 <template>
   <main class="main">
     <template v-if="!activeMode">
-      <h1 class="title">Black hole</h1>
-      <p class="lead">Выберите контекст отрисовки.</p>
-
-      <div class="stack">
-        <section class="card">
-          <h2 class="card-title">Canvas 2D</h2>
-          <p class="card-body">
-            Поддержка:
-            <span :class="canvas2dSupported ? 'ok' : 'bad'">
-              {{ canvas2dSupported ? 'есть' : 'нет' }}
-            </span>
-          </p>
-          <button
-            type="button"
-            class="primary"
-            :disabled="!canvas2dSupported"
-            @click="startCanvas2d"
-          >
-            Старт
-          </button>
-        </section>
-
-        <section class="card">
-          <h2 class="card-title">WebGL</h2>
-          <p class="card-body">
-            Поддержка:
-            <span :class="webglSupported ? 'ok' : 'bad'">
-              {{ webglSupported ? 'есть' : 'нет' }}
-            </span>
-          </p>
-          <p class="hint">Кнопка старта для WebGL пока не подключена.</p>
-        </section>
+      <div class="main-content">
+        <h1 class="title">Black hole</h1>
+        <p class="lead">Select game mode.</p>
+  
+        <div class="stack">
+          <section class="card">
+            <h2 class="card-title">Canvas 2D</h2>
+            <p class="card-body">
+              Supported:
+              <span :class="canvas2dSupported ? 'ok' : 'bad'">
+                {{ canvas2dSupported ? 'yes' : 'no' }}
+              </span>
+            </p>
+            <button
+              type="button"
+              class="primary"
+              :disabled="!canvas2dSupported"
+              @click="startCanvas2d"
+            >
+              Start
+            </button>
+          </section>
+  
+          <section class="card">
+            <h2 class="card-title">WebGL</h2>
+            <p class="card-body">
+              Supported:
+              <span :class="webglSupported ? 'ok' : 'bad'">
+                {{ webglSupported ? 'yes' : 'no' }}
+              </span>
+            </p>
+            <button
+              type="button"
+              class="primary"
+              :disabled="true"
+              @click="startWebgl"
+            >
+              Start (not implemented yet)
+            </button>
+          </section>
+        </div>
       </div>
     </template>
 
     <Game
       v-else
       :mode="activeMode"
-      :auto-start="activeMode === 'canvas2d'"
+      :auto-start="true"
       @leave="leaveGame"
     />
   </main>
@@ -76,10 +89,15 @@ function leaveGame() {
   flex-direction: column;
   flex: 1;
   min-height: 0;
-  max-width: 40rem;
   width: 100%;
   margin: 0 auto;
   gap: 1.25rem;
+}
+
+.main-content {
+  max-width: 40rem;
+  width: 100%;
+  margin: 0 auto;
 }
 
 .title {

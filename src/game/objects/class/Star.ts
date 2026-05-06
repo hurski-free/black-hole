@@ -1,8 +1,8 @@
 import type { vec3 } from "../../math";
 import { STAR_GRAVITY_COEFFICIENT, STAR_MAX_MINUS_MIN, STAR_MIN_SIZE, STAR_RADIUS_SUB_ON_UPDATE } from "../const";
-import { Object } from "./Object";
+import { GameObject } from "./Object";
 
-export class Star extends Object {
+export class Star extends GameObject {
   /**
    * 
    */

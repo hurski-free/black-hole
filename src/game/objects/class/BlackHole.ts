@@ -1,9 +1,9 @@
 import { circleSquare } from "../../math";
 import { BLACK_HOLE_GRAVITY_COEFFICIENT } from "../const";
-import { Object } from "./Object";
+import { GameObject } from "./Object";
 import type { Particle } from "./Particle";
 
-export class BlackHole extends Object {
+export class BlackHole extends GameObject {
   countParticlesAbsorbed: number = 0;
 
   constructor() {

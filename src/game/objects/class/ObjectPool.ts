@@ -1,6 +1,6 @@
-import type { Object } from "./Object";
+import type { GameObject } from "./Object";
 
-export class ObjectPool<T extends Object> {
+export class ObjectPool<T extends GameObject> {
   private pool: T[] = [];
 
   private _capacity: number;
@@ -23,7 +23,15 @@ export class ObjectPool<T extends Object> {
     return this.pool;
   }
 
-  getObject(): T {
+  at(index: number): T {
+    if (index < 0 || index >= this._active_count) {
+      throw new Error('Index out of bounds');
+    }
+
+    return this.pool[index];
+  }
+
+  getNewObject(): T {
     if (this._active_count >= this._capacity) {
       throw new Error('Object pool is full');
     }

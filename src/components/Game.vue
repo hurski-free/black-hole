@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { ref, shallowRef, onMounted, onBeforeUnmount, nextTick } from 'vue'
 import { Canvas2dGame } from '../game/Canvas2dGame'
-import { baseEngine } from '../game/engine/BaseEngine'
-import { canvas2dRender } from '../game/render/Canvas2dRender'
+
+const CANVAS_MIN_WIDTH = 768;
+const CANVAS_MIN_HEIGHT = 1024;
 
 const props = withDefaults(
   defineProps<{
@@ -31,30 +32,21 @@ function applyCanvasSize() {
   const h = root.clientHeight
   if (w < 1 || h < 1) return
 
-  const dpr = window.devicePixelRatio || 1
-  const bw = Math.max(1, Math.floor(w * dpr))
-  const bh = Math.max(1, Math.floor(h * dpr))
-
-  canvas.width = bw
-  canvas.height = bh
+  canvas.width = w
+  canvas.height = h
   canvas.style.width = `${w}px`
   canvas.style.height = `${h}px`
 
   if (props.mode === 'canvas2d') {
     const ctx = canvas.getContext('2d')
     if (ctx) {
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
+      // scale canvas to match device pixel ratio
+      ctx.setTransform(1, 0, 0, 1, 0, 0)
     }
 
     gameRef.value?.resizeCanvas(w, h)
   } else {
-    const gl = glRef ?? (canvas.getContext('webgl2') as WebGL2RenderingContext | null) ?? canvas.getContext('webgl')
-    if (gl) {
-      glRef = gl
-      gl.viewport(0, 0, bw, bh)
-      gl.clearColor(0.05, 0.06, 0.09, 1)
-      gl.clear(gl.COLOR_BUFFER_BIT)
-    }
+    // TODO: call resize
   }
 }
 
@@ -69,10 +61,9 @@ function initCanvas2dGame() {
   
   const game = new Canvas2dGame({
     ctx,
-    engineFunction: baseEngine,
-    renderFunction: canvas2dRender,
   })
   gameRef.value = game
+  game.resizeCanvas(canvas.width, canvas.height)
 
   if (props.autoStart) {
     game.start()
@@ -132,17 +123,8 @@ onMounted(() => {
   window.addEventListener('keydown', onKeyDown)
 
   nextTick(() => {
-    applyCanvasSize()
-
     resizeObserver = new ResizeObserver(() => {
       applyCanvasSize()
-      if (props.mode === 'webgl') {
-        const gl = glRef
-        if (gl) {
-          gl.clearColor(0.05, 0.06, 0.09, 1)
-          gl.clear(gl.COLOR_BUFFER_BIT)
-        }
-      }
     })
 
     if (rootRef.value) {
@@ -152,13 +134,7 @@ onMounted(() => {
     if (props.mode === 'canvas2d') {
       initCanvas2dGame()
     } else {
-      const canvas = canvasRef.value
-      if (canvas) {
-        glRef =
-          (canvas.getContext('webgl2') as WebGL2RenderingContext | null) ??
-          canvas.getContext('webgl')
-        applyCanvasSize()
-      }
+      // TODO: init webgl game
     }
   })
 })
@@ -253,6 +229,7 @@ onBeforeUnmount(() => {
 .canvas-wrap {
   flex: 1;
   min-height: 280px;
+  max-height: calc(100vh - 4rem);
   border-radius: 0.5rem;
   border: 1px solid var(--border);
   background: var(--input-bg);
@@ -261,7 +238,5 @@ onBeforeUnmount(() => {
 
 .game-canvas {
   display: block;
-  width: 100%;
-  height: 100%;
 }
 </style>

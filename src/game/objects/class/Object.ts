@@ -10,7 +10,7 @@ import { COMMON_GRAVITATIONAL_CONSTANT } from "../const";
  */
 export type ObjectState = 'free' | 'new' | 'exist' | 'deleted';
 
-export class Object {
+export class GameObject {
   state: ObjectState = 'free';
 
   radius: number = 0;

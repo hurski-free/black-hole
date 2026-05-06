@@ -15,6 +15,6 @@ export class BlackHole extends GameObject {
     this.deltaRadius += Math.PI / (circleSquare(this.radius));
 
     this.countParticlesAbsorbed++;
-    particle.state = 'deleted';
+    particle.state = 3;
   }
 }

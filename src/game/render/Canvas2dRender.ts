@@ -18,7 +18,7 @@ export class Canvas2dRender implements IRender<BlackHole, Star, Particle> {
     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 
     ctx.save();
-    ctx.translate(game.camera.x, game.camera.y);
+    ctx.translate(-game.camera.x, -game.camera.y);
 
     const countStars = game.stars.activeCount;
     const countParticles = game.particles.activeCount;
@@ -48,7 +48,25 @@ export class Canvas2dRender implements IRender<BlackHole, Star, Particle> {
     for (let i = 0; i < countStars; i++) {
       const star = stars[i];
 
-      ctx.fillStyle = `rgb(${star.colorRGB[0] * 255}, ${star.colorRGB[1] * 255}, ${star.colorRGB[2] * 255})`;
+      const gradient = ctx.createRadialGradient(
+        star.x, star.y, 0, 
+        star.x, star.y, star.radius * 1.7
+      );
+
+      const r = star.colorRGB[0] * 255;
+      const g = star.colorRGB[1] * 255;
+      const b = star.colorRGB[2] * 255;
+
+      gradient.addColorStop(0, `rgba(${r}, ${g}, ${b}, 1)`);
+      gradient.addColorStop(1, `rgba(${r}, ${g}, ${b}, 0)`);
+
+      // star halo
+      ctx.fillStyle = gradient;
+      ctx.beginPath();
+      ctx.arc(star.x, star.y, star.radius * 1.7, 0, 2 * Math.PI);
+      ctx.fill();
+
+      ctx.fillStyle = `rgb(${r}, ${g}, ${b})`;
       ctx.beginPath();
       ctx.arc(star.x, star.y, star.radius, 0, 2 * Math.PI);
       ctx.fill();

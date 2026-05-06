@@ -3,15 +3,30 @@ import { COMMON_GRAVITATIONAL_CONSTANT } from "../const";
 /**
  * states:
  * 
- * free - object is not in the game
- * new - object is new in the game, will processed in next tick
- * exist - object is in the game, processed
- * deleted - object is deleted from the game, will be removed in next tick
+ * 0 - free - object is not in the game
+ * 
+ * 1 - new - object is new in the game, will processed in next tick
+ * 
+ * 2 - exist - object is in the game, processed
+ * 
+ * 3 - deleted - object is deleted from the game, will be removed in next tick
  */
-export type ObjectState = 'free' | 'new' | 'exist' | 'deleted';
+export type ObjectState = 0 | 1 | 2 | 3;
 
 export class GameObject {
-  state: ObjectState = 'free';
+  /**
+   * 0 - free - object is not in the game
+   *
+   * 
+   * 1 - new - object is new in the game, will processed in next tick
+   * 
+   * 
+   * 2 - exist - object is in the game, processed
+   * 
+   * 
+   * 3 - deleted - object is deleted from the game, will be removed in next tick
+   */
+  state: ObjectState = 0;
 
   radius: number = 0;
   deltaRadius: number = 0;
@@ -39,7 +54,7 @@ export class GameObject {
     this.deltaRadius = 0;
     this.computeImpactingMass();
 
-    this.state = 'exist';
+    this.state = 2;
   }
 
   /**

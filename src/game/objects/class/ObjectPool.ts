@@ -4,11 +4,11 @@ export class ObjectPool<T extends GameObject> {
   private pool: T[] = [];
 
   private _capacity: number;
-  private _active_count: number;
+  private _activeCount: number;
 
   constructor(capacity: number, create: () => T) {
     this._capacity = capacity;
-    this._active_count = 0;
+    this._activeCount = 0;
 
     for (let i = 0; i < capacity; i++) {
       this.pool.push(create());
@@ -16,7 +16,7 @@ export class ObjectPool<T extends GameObject> {
   }
 
   get activeCount(): number {
-    return this._active_count;
+    return this._activeCount;
   }
 
   getArray(): Readonly<T[]> {
@@ -24,7 +24,7 @@ export class ObjectPool<T extends GameObject> {
   }
 
   at(index: number): T {
-    if (index < 0 || index >= this._active_count) {
+    if (index < 0 || index >= this._activeCount) {
       throw new Error('Index out of bounds');
     }
 
@@ -32,14 +32,14 @@ export class ObjectPool<T extends GameObject> {
   }
 
   getNewObject(): T {
-    if (this._active_count >= this._capacity) {
+    if (this._activeCount >= this._capacity) {
       throw new Error('Object pool is full');
     }
 
-    const i = this._active_count;
-    this._active_count++;
+    const i = this._activeCount;
+    this._activeCount++;
 
-    this.pool[i].state = 'new';
+    this.pool[i].state = 1;
 
     return this.pool[i];
   }
@@ -50,17 +50,17 @@ export class ObjectPool<T extends GameObject> {
   swapAndPop() {
     let i = 0;
 
-    while (i < this._active_count) {
-      if (this.pool[i].state === 'deleted') {
-        const lastIndex = this._active_count - 1;
+    while (i < this._activeCount) {
+      if (this.pool[i].state === 3) {
+        const lastIndex = this._activeCount - 1;
         const deletedObject = this.pool[i];
         const lastObject = this.pool[lastIndex];
 
         this.pool[i] = lastObject;
         this.pool[lastIndex] = deletedObject;
-        deletedObject.state = 'free';
+        deletedObject.state = 0;
 
-        this._active_count--;
+        this._activeCount--;
       } else {
         i++;
       }
@@ -68,21 +68,21 @@ export class ObjectPool<T extends GameObject> {
   }
 
   update() {
-    for (let i = 0; i < this._active_count; i++) {
+    for (let i = 0; i < this._activeCount; i++) {
       this.pool[i].update();
     }
   }
 
   clear() {
-    for (let i = 0; i < this._active_count; i++) {
-      this.pool[i].state = 'free';
+    for (let i = 0; i < this._activeCount; i++) {
+      this.pool[i].state = 0;
     }
-    this._active_count = 0;
+    this._activeCount = 0;
   }
 
   free() {
     (this.pool as unknown) = null;
     this._capacity = 0;
-    this._active_count = 0;
+    this._activeCount = 0;
   }
 }

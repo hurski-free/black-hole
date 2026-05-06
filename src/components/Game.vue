@@ -2,9 +2,6 @@
 import { ref, shallowRef, onMounted, onBeforeUnmount, nextTick } from 'vue'
 import { Canvas2dGame } from '../game/Canvas2dGame'
 
-const CANVAS_MIN_WIDTH = 768;
-const CANVAS_MIN_HEIGHT = 1024;
-
 const props = withDefaults(
   defineProps<{
     mode: 'canvas2d' | 'webgl'
@@ -22,6 +19,9 @@ const canvasRef = ref<HTMLCanvasElement | null>(null)
 const gameRef = shallowRef<Canvas2dGame | null>(null)
 let glRef: WebGLRenderingContext | WebGL2RenderingContext | null = null
 let resizeObserver: ResizeObserver | null = null
+let isMouseDragging = false
+let lastMouseClientX = 0
+let lastMouseClientY = 0
 
 function applyCanvasSize() {
   const root = rootRef.value
@@ -62,12 +62,15 @@ function initCanvas2dGame() {
   const game = new Canvas2dGame({
     ctx,
   })
-  gameRef.value = game
-  game.resizeCanvas(canvas.width, canvas.height)
 
-  if (props.autoStart) {
-    game.start()
-  }
+  setTimeout(() => {
+    gameRef.value = game
+    game.resizeCanvas(canvas.width, canvas.height, true)
+
+    if (props.autoStart) {
+      game.start()
+    }
+  }, 100)
 }
 
 function togglePauseResume() {
@@ -110,10 +113,57 @@ function onKeyDown(event: KeyboardEvent) {
   } else if (event.code === 'Enter') {
     event.preventDefault()
     toggleStartStop()
+  } else if (event.code === 'KeyS') {
+    event.preventDefault()
+    gameRef.value?.moveToStar()
+  } else if (event.code === 'KeyB') {
+    event.preventDefault()
+    gameRef.value?.moveToBlackHole()
   }
 }
 
+function onCanvasMouseDown(event: MouseEvent) {
+  if (event.button === 0) {
+    isMouseDragging = true
+    lastMouseClientX = event.clientX
+    lastMouseClientY = event.clientY
+  }
+}
+
+function onCanvasMouseMove(event: MouseEvent) {
+  if (props.mode !== 'canvas2d') return
+
+  const game = gameRef.value
+  if (!game) return
+
+  if (!isMouseDragging) {
+    if (game.gameState === 'running') {
+      const root = rootRef.value
+      if (!root) return
+
+      const rect = root.getBoundingClientRect()
+      const mouseX = event.clientX - rect.left
+      const mouseY = event.clientY - rect.top
+      game.hoverStar(mouseX, mouseY)
+    }
+    return
+  }
+
+  const deltaX = event.clientX - lastMouseClientX
+  const deltaY = event.clientY - lastMouseClientY
+
+  game.cameraMove(deltaX, deltaY)
+
+  lastMouseClientX = event.clientX
+  lastMouseClientY = event.clientY
+}
+
+function stopCanvasDrag() {
+  isMouseDragging = false
+}
+
 function teardownGame() {
+  stopCanvasDrag()
   gameRef.value?.stop()
   gameRef.value = null
   glRef = null
@@ -164,7 +214,14 @@ onBeforeUnmount(() => {
         Restart
       </button>
     </header>
-    <div ref="rootRef" class="canvas-wrap">
+    <div
+      ref="rootRef"
+      class="canvas-wrap"
+      @mousedown="onCanvasMouseDown"
+      @mousemove="onCanvasMouseMove"
+      @mouseup="stopCanvasDrag"
+      @mouseleave="stopCanvasDrag"
+    >
       <canvas ref="canvasRef" class="game-canvas" />
     </div>
   </div>
@@ -228,8 +285,9 @@ onBeforeUnmount(() => {
 
 .canvas-wrap {
   flex: 1;
-  min-height: 280px;
   max-height: calc(100vh - 4rem);
+  min-width: 1024px;
+  min-height: 768px;
   border-radius: 0.5rem;
   border: 1px solid var(--border);
   background: var(--input-bg);

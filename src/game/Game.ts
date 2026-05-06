@@ -94,8 +94,8 @@ export abstract class Game<BH, S, P> {
     if (this._gameState === 'wait_for_start') {
       this._gameState = 'running';
 
-      this._camera.x = this._halfWidth;
-      this._camera.y = this._halfHeight;  
+      this._camera.x = -this.halfWidth;
+      this._camera.y = -this.halfHeight;  
 
       this.initStartData();
 
@@ -135,6 +135,23 @@ export abstract class Game<BH, S, P> {
    */
   protected abstract tryBlackHoleAppear(): void;
 
+  /**
+   * Modify position to world and search star under mouse
+   * 
+   * If star found, increase its radius
+   */
+  public abstract hoverStar(mouseX: number, mouseY: number): void;
+
+  /**
+   * Move camera to star
+   */
+  public abstract moveToStar(): void;
+
+  /**
+   * Move camera to black hole
+   */
+  public abstract moveToBlackHole(): void;
+
   pause() {
     if (this._gameState === 'running') {
       this._gameState = 'paused';
@@ -165,11 +182,25 @@ export abstract class Game<BH, S, P> {
     this.start();
   }
 
-  resizeCanvas(width: number, height: number) {
+  resizeCanvas(width: number, height: number, cameraSet = false) {
     this._width = width;
     this._height = height;
     this._halfWidth = width / 2;
     this._halfHeight = height / 2;
+
+    if (cameraSet) {
+      this._camera.x = -this._halfWidth;
+      this._camera.y = -this._halfHeight;  
+    }
+  }
+
+  cameraMove(deltaX: number, deltaY: number) {
+    this._camera.x -= deltaX;
+    this._camera.y -= deltaY;
+
+    if (this.gameState === 'paused') {
+      this.renderer.render(this);
+    }
   }
 
   private clearObjects() {

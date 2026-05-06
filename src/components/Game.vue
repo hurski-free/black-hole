@@ -17,7 +17,7 @@ const emit = defineEmits<{
 const rootRef = ref<HTMLDivElement | null>(null)
 const canvasRef = ref<HTMLCanvasElement | null>(null)
 const gameRef = shallowRef<Canvas2dGame | null>(null)
-let glRef: WebGLRenderingContext | WebGL2RenderingContext | null = null
+// let glRef: WebGLRenderingContext | WebGL2RenderingContext | null = null
 let resizeObserver: ResizeObserver | null = null
 let isMouseDragging = false
 let lastMouseClientX = 0
@@ -166,7 +166,7 @@ function teardownGame() {
   stopCanvasDrag()
   gameRef.value?.stop()
   gameRef.value = null
-  glRef = null
+  // glRef = null
 }
 
 onMounted(() => {

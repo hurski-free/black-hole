@@ -1,5 +1,5 @@
 import { circleSquare } from "../../math";
-import { BLACK_HOLE_GRAVITY_COEFFICIENT } from "../const";
+import { BH_GRAVITY_MPL } from "../const";
 import { GameObject } from "./Object";
 import type { Particle } from "./Particle";
 
@@ -8,7 +8,7 @@ export class BlackHole extends GameObject {
 
   constructor() {
     super();
-    this.objectGravityCoefficient = BLACK_HOLE_GRAVITY_COEFFICIENT;
+    this.objectGravityCoefficient = BH_GRAVITY_MPL;
   }
 
   absorbParticle(particle: Particle) {

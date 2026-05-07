@@ -1,72 +1,125 @@
-export const COMMON_GRAVITATIONAL_CONSTANT = 0.3;
-export const BLACK_HOLE_GRAVITY_COEFFICIENT = 10;
-export const STAR_GRAVITY_COEFFICIENT = 1;
+/**
+ * Rules for constants
+ * 
+ * Short names:
+ * 
+ * BH - Black Hole
+ * STR - Star, STRS - Stars
+ * SNV - Supernova
+ * PTC - Particle, PTCS - Particles
+ * 
+ * VELO - Velocity
+ * MUL - Multiplier
+ * INC - Increment
+ * DEC - Decrement
+ * COEF - Coefficient
+ * EXPL - Explosion
+ */
 
-export const PARTICLE_RADIUS = 1;
-
-export const STAR_DISAPPEAR_RADIUS = 5;
-export const STAR_RADIUS_SUB_ON_UPDATE = 0.0008;
-export const STAR_MIN_RADIUS = 10;
-export const STAR_MAX_RADIUS = 60;
-export const STAR_MAX_MINUS_MIN = STAR_MAX_RADIUS - STAR_MIN_RADIUS;
-export const STAR_HOVER_RADIUS_INC = 0.08;
-
-export const SUPERNOVA_RADIUS_INC = 0.8;
-export const SUPERNOVA_RADIUS_DEC = 2.8;
-export const SUPERNOVA_RADIUS_MIN = STAR_MIN_RADIUS * 1.4;
-export const SUPERNOVA_RADIUS_MAX = STAR_MAX_RADIUS * 1.4;
-export const SUPERNOVA_STAR_SPAWN_RADIUS = STAR_MIN_RADIUS * 1.4;
-export const SUPERNOVA_MIN_STARS_SPAWN = 0.7; // range for random
-export const SUPERNOVA_MAX_STARS_SPAWN = 2.9; // range for random
-export const SUPERNOVA_STAR_SPAWN_MIN_VELOCITY = 0.2;
-export const SUPERNOVA_STAR_SPAWN_MAX_VELOCITY = 0.4;
-export const SUPERNOVA_MIN_PARTICLE_SPAWN = 50;
-export const SUPERNOVA_MAX_PARTICLE_SPAWN = 120;
-export const SUPERNOVA_PARTICLE_SPAWN_MIN_VELOCITY = 0.2;
-export const SUPERNOVA_PARTICLE_SPAWN_MAX_VELOCITY = 0.4;
-
-export const CANVAS2D_BLACK_HOLE_POOL_CAPACITY = 1000;
-export const CANVAS2D_STAR_POOL_CAPACITY = 5000;
-export const CANVAS2D_PARTICLE_POOL_CAPACITY = 250000;
-
-export const WEBGL_BLACK_HOLE_POOL_CAPACITY = 1000;
-export const WEBGL_STAR_POOL_CAPACITY = 5000;
-export const WEBGL_PARTICLE_POOL_CAPACITY = 500000;
-
-export const INITIAL_STAR_COUNT = 2;
-export const INITIAL_BLACK_HOLE_COUNT = 1;
-export const INITIAL_BLACK_HOLE_RADIUS = 10;
-
-export const STAR_COLLISION_COEFFICIENT = 0.8;
-export const STAR_ABSORB_MULTIPLIER = 2;
+// *****************************************************
+// * GRAVITY CONSTANTS PART
+// *****************************************************
 
 /**
- * Coefficient of particles which must be multiplied with star mass to get the number of particles after explosion
+ * Common gravitational constant, all gravity impacts will multiplies on this value
  */
-export const PARTICLES_AFTER_STAR_EXP_MIN_COUNT = 15;
-export const PARTICLES_AFTER_STAR_EXP_MAX_COUNT = 40;
-export const PARTICLES_AFTER_STAR_EXP_MIN_R = 0.6;
-export const PARTICLES_AFTER_STAR_EXP_MAX_R = 0.95;
+export const COMMON_GRAVITY_CONSTANT = 0.3;
 
-export const PARTICLES_AFTER_STAR_EXP_MIN_V = 0.2;
-export const PARTICLES_AFTER_STAR_EXP_MAX_V = 0.22;
+// *****************************************************
+// * STAR CONSTANTS PART
+// *****************************************************
+
+export const STR_GRAVITY_COEF = 1;
 
 /**
- * 5 seconds
+ * Star will auto disappear if raduis is less than this value
  */
-export const FIRST_BLACK_HOLE_TIME_REMAINS = 5000;
+export const STR_DISAPPEAR_RADIUS = 3;
+
 /**
- * 60 seconds
+ * Star auto decrease own radius each cycle
  */
-export const NEXT_BLACK_HOLE_TIME_REMAINS = 60000;
+export const STR_RADIUS_SUB_ON_UPDATE = 0.0008;
+
+/**
+ * Minimum radius to interact with star by hover
+ */
+export const STR_MIN_RADIUS = 10;
+export const STR_MAX_RADIUS = 60;
+
+/**
+ * Helper for calculate color of star
+ */
+export const STR_MAX_MINUS_MIN = STR_MAX_RADIUS - STR_MIN_RADIUS;
+export const STR_HOVER_RADIUS_INC = 0.18;
+
+/**
+ * If star X and star Y are closer than coefficient * (starX.radius + starY.radius), then they will collide
+ */
+export const STR_COLLISION_COEF = 0.8;
+
+/**
+ * If star X larger than star Y with coefficient, then star X will absorb star Y
+ */
+export const STR_ABSORB_MPL = 2;
+
+// *****************************************************
+// * SUPERNOVA CONSTANTS PART
+// *****************************************************
+
+export const SNV_RADIUS_INC = 0.8;
+export const SNV_RADIUS_DEC = 2.8;
+export const SNV_RADIUS_MIN = STR_MIN_RADIUS * 1.4;
+export const SNV_RADIUS_MAX = STR_MAX_RADIUS * 1.4;
+export const SNV_STAR_SPAWN_RADIUS = STR_MIN_RADIUS * 1.4;
+export const SNV_MIN_STRS_SPAWN = 0.7;
+export const SNV_MAX_STRS_SPAWN = 2.9;
+export const SNV_STR_SPAWN_MIN_VELO = 0.2;
+export const SNV_STR_SPAWN_MAX_VELO = 0.4;
+export const SNV_MIN_PTC_SPAWN = 50;
+export const SNV_MAX_PTC_SPAWN = 120;
+export const SNV_PTC_SPAWN_MIN_VELO = 0.2;
+export const SNV_PTC_SPAWN_MAX_VELO = 0.4;
+
+// *****************************************************
+// * PARTICLE CONSTANTS PART
+// *****************************************************
+
+export const PTC_RADIUS = 1;
+
+/**
+ * Coefficient of particles which must be multiplied with star radius to get the number of particles after explosion
+ */
+export const PTC_AFTER_STR_EXPL_MIN_COUNT = 15;
+export const PTC_AFTER_STR_EXPL_MAX_COUNT = 40;
+export const PTC_AFTER_STR_EXPL_MIN_RADIUS = 0.6;
+export const PTC_AFTER_STR_EXPL_MAX_RADIUS = 0.95;
+
+export const PTC_AFTER_STAR_EXPL_MIN_VELO = 0.2;
+export const PTC_AFTER_STAR_EXPL_MAX_VELO = 0.22;
+
+// *****************************************************
+// * BLACK HOLE CONSTANTS PART
+// *****************************************************
+
+export const BH_FIRST_APPEAR_TIME_REMAINS = 5000; // ms
+export const BH_NEXT_APPEAR_TIME_REMAINS = 60000; // ms
+export const BH_APPEAR_RADIUS = 10;
+
 /**
  * Show black hole time when remain 10 seconds
  */
-export const BLACK_HOLE_TIME_APPEAR_MIN_TIME = 10000;
+export const BH_SHOW_TIME_APPEAR_MIN_TIME = 10000;
 
-export const BLACK_HOLE_STAR_ABSORB_SIZE_MULTIPLIER = 10;
-export const BLACK_HOLE_STAR_ABSORB_DISTANCE_MIN = 250;
-export const BLACK_HOLE_STAR_ABSORB_PARTICLES_GENERATE_MULTIPLIER = 3;
-export const BLACK_HOLE_STAR_ABSORB_RADIUS_MULTIPLIER = 0.012;
-export const BLACK_HOLE_STAR_ABSORB_PARTICLES_MIN_R = 0.99;
-export const BLACK_HOLE_STAR_ABSORB_PARTICLES_MAX_R = 1.05;
+export const BH_GRAVITY_MPL = 10;
+
+
+export const BH_STR_ABSORB_MIN_RADIUS = 250;
+/**
+ * Additional distance to absorb star, 
+ */
+export const BH_STR_ABSORB_RADIUS_MPL = 10;
+export const BH_STR_ABSORB_PTCS_GENERATE_MPL = 3;
+export const BH_STR_ABSORB_DELTA_RADIUS_MPL = 0.012;
+export const BH_STR_ABSORB_PTCS_MIN_RADIUS = 0.99;
+export const BH_STR_ABSORB_PTCS_MAX_RADIUS = 1.05;

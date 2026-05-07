@@ -1,4 +1,4 @@
-import { COMMON_GRAVITATIONAL_CONSTANT } from "../const";
+import { COMMON_GRAVITY_CONSTANT } from "../const";
 
 /**
  * states:
@@ -41,7 +41,10 @@ export class GameObject {
   accelerationY: number = 0;
 
   objectGravityCoefficient: number = 0;
-  computedImpactingMass: number = 0;
+  /**
+   * Impacting mass is calculated as radius * gravity coefficient * common gravity constant
+   */
+  impactingMass: number = 0;
 
   update() {
     this.velocityX += this.accelerationX;
@@ -63,6 +66,6 @@ export class GameObject {
    * Use it after force set radius
    */
   computeImpactingMass() {
-    this.computedImpactingMass = this.radius * this.objectGravityCoefficient * COMMON_GRAVITATIONAL_CONSTANT;
+    this.impactingMass = this.radius * this.objectGravityCoefficient * COMMON_GRAVITY_CONSTANT;
   }
 }

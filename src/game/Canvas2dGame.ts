@@ -1,20 +1,18 @@
 
 import { EngineClassWorkflow } from "./engine/EngineClassWorkflow";
 import { Game } from "./Game";
+import { CANVAS2D_BLACK_HOLE_POOL_CAPACITY, CANVAS2D_PARTICLE_POOL_CAPACITY, CANVAS2D_STAR_POOL_CAPACITY } from "./game-canvas2d.const";
 import { random } from "./math";
 import { BlackHole } from "./objects/class/BlackHole";
 import { ObjectPool } from "./objects/class/ObjectPool";
 import { Particle } from "./objects/class/Particle";
 import { Star } from "./objects/class/Star";
 import { 
-  CANVAS2D_BLACK_HOLE_POOL_CAPACITY, 
-  FIRST_BLACK_HOLE_TIME_REMAINS, 
-  INITIAL_BLACK_HOLE_RADIUS, 
-  NEXT_BLACK_HOLE_TIME_REMAINS, 
-  CANVAS2D_PARTICLE_POOL_CAPACITY, 
-  STAR_HOVER_RADIUS_INC, 
-  STAR_MIN_RADIUS, 
-  CANVAS2D_STAR_POOL_CAPACITY 
+  BH_FIRST_APPEAR_TIME_REMAINS,
+  BH_APPEAR_RADIUS,
+  BH_NEXT_APPEAR_TIME_REMAINS,
+  STR_HOVER_RADIUS_INC,
+  STR_MIN_RADIUS,
 } from "./objects/const";
 import { Canvas2dRender } from "./render/Canvas2dRender";
 
@@ -71,7 +69,7 @@ export class Canvas2dGame extends Game<BlackHole, Star, Particle> {
     star2.isSupernova = false;
 
     // this._blackHoleTimeRemains = FIRST_BLACK_HOLE_TIME_REMAINS * 10000;
-    this._blackHoleTimeRemains = FIRST_BLACK_HOLE_TIME_REMAINS;
+    this._blackHoleTimeRemains = BH_FIRST_APPEAR_TIME_REMAINS;
   }
   protected tryBlackHoleAppear() {
     const blackHole = this.blackHoles.getNewObject();
@@ -93,9 +91,9 @@ export class Canvas2dGame extends Game<BlackHole, Star, Particle> {
 
     blackHole.x = x + random(-this._halfWidth, this._halfWidth);
     blackHole.y = y + random(-this._halfHeight, this._halfHeight);
-    blackHole.radius = INITIAL_BLACK_HOLE_RADIUS;
+    blackHole.radius = BH_APPEAR_RADIUS;
 
-    this._blackHoleTimeRemains = NEXT_BLACK_HOLE_TIME_REMAINS;
+    this._blackHoleTimeRemains = BH_NEXT_APPEAR_TIME_REMAINS;
   }
 
   public hoverStar(mouseX: number, mouseY: number): void {
@@ -107,12 +105,12 @@ export class Canvas2dGame extends Game<BlackHole, Star, Particle> {
     
     for (let i = 0; i < starsCount; i++) {
       // avoid hover on not existing or supernova, also star less than disappear radius not affected by hover
-      if (stars[i].state === 2 && !stars[i].isSupernova && stars[i].radius > STAR_MIN_RADIUS) {
+      if (stars[i].state === 2 && !stars[i].isSupernova && stars[i].radius > STR_MIN_RADIUS) {
         const star = stars[i];
         const dis = Math.hypot(x - star.x, y - star.y);
         
         if (dis < star.radius) {
-          star.deltaRadius += STAR_HOVER_RADIUS_INC;
+          star.deltaRadius += STR_HOVER_RADIUS_INC;
         }
       }
     }

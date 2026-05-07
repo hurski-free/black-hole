@@ -2,7 +2,7 @@ import type { Game } from "../Game";
 import type { BlackHole } from "../objects/class/BlackHole";
 import type { Particle } from "../objects/class/Particle";
 import type { Star } from "../objects/class/Star";
-import { BLACK_HOLE_TIME_APPEAR_MIN_TIME } from "../objects/const";
+import { BH_SHOW_TIME_APPEAR_MIN_TIME } from "../objects/const";
 import type { IRender } from "./IRender";
 
 export class Canvas2dRender implements IRender<BlackHole, Star, Particle> {
@@ -80,9 +80,9 @@ export class Canvas2dRender implements IRender<BlackHole, Star, Particle> {
     ctx.fillText(`Particles: ${countParticles}`, 10, 40);
     ctx.fillText(`Black holes: ${countBlackHoles}`, 10, 60);
 
-    if (game.blackHoleTimeRemains <= BLACK_HOLE_TIME_APPEAR_MIN_TIME) {
+    if (game.blackHoleTimeRemains <= BH_SHOW_TIME_APPEAR_MIN_TIME) {
       const timeRemain = (game.blackHoleTimeRemains / 1000).toFixed(1); // round to 0.1 seconds
-      const blackHoleColor = Math.round(255 * game.blackHoleTimeRemains / BLACK_HOLE_TIME_APPEAR_MIN_TIME);
+      const blackHoleColor = Math.round(255 * game.blackHoleTimeRemains / BH_SHOW_TIME_APPEAR_MIN_TIME);
       ctx.fillStyle = `rgb(${255},${blackHoleColor},${blackHoleColor})`;
       ctx.fillText(`Black hole time remains: ${timeRemain}`, 10, game.height - 10);
     }

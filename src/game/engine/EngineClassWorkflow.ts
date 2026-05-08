@@ -97,16 +97,15 @@ export class EngineClassWorkflow implements IEngine<BlackHole, Star, Particle> {
 
           // star inside absorb distance
           if (distance < absorbDistance) {
-
             const absorbCoefficient = 1 - distance / absorbDistance;
 
             const countParticles = Math.floor(starJ.radius * absorbCoefficient * BH_STR_ABSORB_PTCS_GENERATE_MPL);
-            const deltaRadius = distance + blackHoleI.radius + starJ.radius < 0
+            const deltaRadius = distance - blackHoleI.radius - starJ.radius < 0
               ? starJ.radius * 1.1
               : starJ.radius * absorbCoefficient * BH_STR_ABSORB_DELTA_RADIUS_MPL;
 
             if (deltaRadius > starJ.radius || starJ.radius < STR_DISAPPEAR_RADIUS) {
-              // console.log('starJ is deleted');
+              console.log('starJ is deleted');
               starJ.state = 3;
             } else {
               starJ.deltaRadius -= deltaRadius;

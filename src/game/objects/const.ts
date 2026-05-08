@@ -51,7 +51,7 @@ export const STR_MAX_RADIUS = 60;
  * Helper for calculate color of star
  */
 export const STR_MAX_MINUS_MIN = STR_MAX_RADIUS - STR_MIN_RADIUS;
-export const STR_HOVER_RADIUS_INC = 0.14;
+export const STR_HOVER_RADIUS_INC = 0.66;
 
 /**
  * If star X and star Y are closer than coefficient * (starX.radius + starY.radius), then they will collide

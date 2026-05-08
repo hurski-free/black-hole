@@ -104,6 +104,10 @@ export class WebGLGame extends Game<BlackHole, Star, Particle> {
 
     blackHole.x = x + random(-this._halfWidth, this._halfWidth);
     blackHole.y = y + random(-this._halfHeight, this._halfHeight);
+    blackHole.velocityX = 0;
+    blackHole.velocityY = 0;
+    blackHole.accelerationX = 0;
+    blackHole.accelerationY = 0;
     blackHole.radius = BH_APPEAR_RADIUS;
 
     this._blackHoleTimeRemains = BH_NEXT_APPEAR_TIME_REMAINS;

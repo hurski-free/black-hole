@@ -23,6 +23,7 @@ let resizeObserver: ResizeObserver | null = null
 let isMouseDragging = false
 let lastMouseClientX = 0
 let lastMouseClientY = 0
+let lasMouseMoveCall = 0;
 
 function applyCanvasSize() {
   const root = rootRef.value
@@ -158,6 +159,13 @@ function onCanvasMouseMove(event: MouseEvent) {
 
   if (!isMouseDragging) {
     if (game.gameState === 'running') {
+      // limit mouse hover call to 60fps
+      const now = Date.now();
+      if (now - lasMouseMoveCall < 16) {
+        return;
+      }
+      lasMouseMoveCall = now;
+
       const root = rootRef.value
       if (!root) return
 

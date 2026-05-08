@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, shallowRef, onMounted, onBeforeUnmount, nextTick } from 'vue'
 import { Canvas2dGame } from '../game/Canvas2dGame'
-import { WebGLGame } from '../game/WebglGame';
+import { WebGLGame } from '../game/WebGLGame';
 
 const props = withDefaults(
   defineProps<{

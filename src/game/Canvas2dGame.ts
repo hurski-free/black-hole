@@ -68,7 +68,6 @@ export class Canvas2dGame extends Game<BlackHole, Star, Particle> {
     star2.deltaRadius = 0;
     star2.isSupernova = false;
 
-    // this._blackHoleTimeRemains = FIRST_BLACK_HOLE_TIME_REMAINS * 10000;
     this._blackHoleTimeRemains = BH_FIRST_APPEAR_TIME_REMAINS;
   }
   protected tryBlackHoleAppear() {
@@ -91,6 +90,11 @@ export class Canvas2dGame extends Game<BlackHole, Star, Particle> {
 
     blackHole.x = x + random(-this._halfWidth, this._halfWidth);
     blackHole.y = y + random(-this._halfHeight, this._halfHeight);
+    blackHole.velocityX = 0;
+    blackHole.velocityY = 0;
+    blackHole.accelerationX = 0;
+    blackHole.accelerationY = 0;
+    blackHole.deltaRadius = 0;
     blackHole.radius = BH_APPEAR_RADIUS;
 
     this._blackHoleTimeRemains = BH_NEXT_APPEAR_TIME_REMAINS;

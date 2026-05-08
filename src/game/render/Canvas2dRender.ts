@@ -35,7 +35,6 @@ export class Canvas2dRender implements IRender<BlackHole, Star, Particle> {
       ctx.fill();
     }
 
-    // FIXME: black hole draw for debug
     for (let i = 0; i < countBlackHoles; i++) {
       const blackHole = blackHoles[i];
 

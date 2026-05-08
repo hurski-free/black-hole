@@ -1,4 +1,4 @@
-import { PI_DIV_2, PI_MUL_2, random } from "../math";
+import { PI_DIV_4, PI_MUL_2, random } from "../math";
 import {
   PTC_AFTER_STR_EXPL_MIN_COUNT,
   PTC_AFTER_STR_EXPL_MAX_COUNT,
@@ -8,12 +8,9 @@ import {
   STR_COLLISION_COEF,
   PTC_AFTER_STAR_EXPL_MIN_VELO,
   PTC_AFTER_STAR_EXPL_MAX_VELO,
-  BH_STR_ABSORB_RADIUS_MPL,
   BH_STR_ABSORB_PTCS_GENERATE_MPL,
   BH_STR_ABSORB_PTCS_MIN_RADIUS,
   BH_STR_ABSORB_PTCS_MAX_RADIUS,
-  BH_STR_ABSORB_MIN_RADIUS,
-  BH_STR_ABSORB_DELTA_RADIUS_MPL,
   STR_DISAPPEAR_RADIUS,
   SNV_MAX_STRS_SPAWN,
   SNV_MIN_STRS_SPAWN,
@@ -89,35 +86,30 @@ export class EngineClassWorkflow implements IEngine<BlackHole, Star, Particle> {
 
         // absorb particles from starJ to blackHoleI
         if (starJ.state === 2 && !starJ.isSupernova) {
-          const absorbDistance = BH_STR_ABSORB_MIN_RADIUS + blackHoleI.radius * BH_STR_ABSORB_RADIUS_MPL;
+          const starSurfaceGravity = starJ.impactingMass / (starJ.radius * starJ.radius);
+          const blackHoleToStarSurfaceDistance = distance - starJ.radius + Math.sqrt(2 * starJ.radius * starJ.radius);
+          const blackHoleImpactOnStarSurface = blackHoleI.impactingMass / (blackHoleToStarSurfaceDistance * blackHoleToStarSurfaceDistance);
 
           // star inside absorb distance
-          if (distance < absorbDistance) {
-            const absorbCoefficient = 1 - distance / absorbDistance;
-
-            const countParticles = Math.floor(starJ.radius * absorbCoefficient * BH_STR_ABSORB_PTCS_GENERATE_MPL);
+          if (blackHoleImpactOnStarSurface > starSurfaceGravity) {
+            const countParticles = Math.floor(starJ.radius * BH_STR_ABSORB_PTCS_GENERATE_MPL);
             const deltaRadius = distance - blackHoleI.radius - starJ.radius < 0
               ? starJ.radius * 1.1
-              : starJ.radius * absorbCoefficient * BH_STR_ABSORB_DELTA_RADIUS_MPL;
+              : starJ.radius * 0.014;
 
             if (deltaRadius > starJ.radius || starJ.radius < STR_DISAPPEAR_RADIUS) {
-              console.log('starJ is deleted');
               starJ.state = 3;
             } else {
               starJ.deltaRadius -= deltaRadius;
             }
 
-            // let alpha = 0;
             let alpha = Math.acos(dx / distance);
 
             if(dy < 0) {
               alpha *= -1;
             }
-      
-            alpha += PI_DIV_2;
 
-            let dangle = Math.PI * (1.0 - 1.0 / countParticles);
-            // let dr = dangle / Math.PI * 0.09;
+            let dangle = PI_DIV_4;
 
             const ndx = dx * blackHoleI.impactingMass / distance ** 3;
             const ndy = dy * blackHoleI.impactingMass / distance ** 3;
@@ -126,12 +118,11 @@ export class EngineClassWorkflow implements IEngine<BlackHole, Star, Particle> {
               const particle = game.particles.getNewObject();
               const angle = random(alpha - dangle, alpha + dangle);
 
-              // alpha += PI_MUL_2 / countParticles;
               particle.x = starJ.x + random(BH_STR_ABSORB_PTCS_MIN_RADIUS, BH_STR_ABSORB_PTCS_MAX_RADIUS) * starJ.radius * Math.cos(angle);
               particle.y = starJ.y + random(BH_STR_ABSORB_PTCS_MIN_RADIUS, BH_STR_ABSORB_PTCS_MAX_RADIUS) * starJ.radius * Math.sin(angle);
 
-              particle.velocityX = starJ.velocityX * 0.8;
-              particle.velocityY = starJ.velocityY * 0.8;
+              particle.velocityX = starJ.velocityX + ndx;
+              particle.velocityY = starJ.velocityY + ndx;
 
               particle.accelerationX = ndx;
               particle.accelerationY = ndy;
@@ -313,6 +304,34 @@ export class EngineClassWorkflow implements IEngine<BlackHole, Star, Particle> {
 
         starJ.accelerationX += dx * starI.impactingMass / distance;
         starJ.accelerationY += dy * starI.impactingMass / distance;
+      }
+
+      // interaction starI with particles
+      for (let j = i + 1; j < particlesCount; j++) {
+        const particleJ = particlesArray[j];
+
+        if (particleJ.state !== 2) {
+          continue;
+        }
+
+        let dx = starI.x - particleJ.x;
+        let dy = starI.y - particleJ.y;
+
+        let distance = Math.hypot(dx, dy);
+
+        if (distance < starI.radius * 0.8) {
+          starI.absorbParticle(particleJ);
+        }
+
+        // Normalize oX and oY vectors
+        dx /= distance;
+        dy /= distance;
+
+        // square distance
+        distance *= distance;
+
+        particleJ.accelerationX += dx * starI.impactingMass / distance;
+        particleJ.accelerationY += dy * starI.impactingMass / distance;
       }
     }
 

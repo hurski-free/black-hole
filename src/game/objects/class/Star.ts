@@ -1,7 +1,7 @@
-import type { vec3 } from "../../math";
+import { circleSquare, type vec3 } from "../../math";
 import { 
   STR_DISAPPEAR_RADIUS,
-  STR_GRAVITY_COEF,
+  STR_GRAVITY_MPL,
   STR_MAX_MINUS_MIN,
   STR_MAX_RADIUS,
   STR_MIN_RADIUS,
@@ -12,6 +12,7 @@ import {
   SNV_RADIUS_MIN,
 } from "../const";
 import { GameObject } from "./Object";
+import type { Particle } from "./Particle";
 
 /**
  * 0 - expanding
@@ -42,7 +43,7 @@ export class Star extends GameObject {
 
   constructor() {
     super();
-    this.objectGravityCoefficient = STR_GRAVITY_COEF;
+    this.objectGravityCoefficient = STR_GRAVITY_MPL;
   }
 
   update() {
@@ -99,6 +100,11 @@ export class Star extends GameObject {
     this.colorRGB[0] = Math.abs(r - 0.5) - Math.abs(r - 1.0) + 0.5;
     this.colorRGB[1] = Math.abs(2.0 - r) - Math.abs(1.5 - r) + r - Math.abs(0.5 - r);
     this.colorRGB[2] = Math.abs(r - 1.5) - Math.abs(r - 1.0) + 0.5;
+  }
+
+  absorbParticle(particle: Particle) {
+    this.deltaRadius += Math.PI / (circleSquare(this.radius));
+    particle.state = 3;
   }
 
   mergeStar(other: Star) {

@@ -21,21 +21,25 @@ precision highp float;
 
 out vec4 out_color;
 
+const float MIN_POINT_RADIUS = 0.375;
 const float MAX_POINT_RADIUS = 0.5;
 const float CORE_RADIUS = MAX_POINT_RADIUS / 1.2;
 
-const vec3 BLACK_HOLE_HALO_COLOR = vec3(1.0, 1.0, 1.0);
+const vec3 BLACK_HOLE_HALO_COLOR = vec3(0.9921, 0.7647, 0.4941);
 
 void main() {
   float dist = length(gl_PointCoord - 0.5);
   float alpha = 1.0;
 
-  if (dist < CORE_RADIUS) {
+  if (dist < MIN_POINT_RADIUS) {
     discard;
   }
 
   if (dist > CORE_RADIUS) {
     alpha -= pow((dist - CORE_RADIUS) / (MAX_POINT_RADIUS - CORE_RADIUS), 0.5);
+  } else if (dist > MIN_POINT_RADIUS) {
+    // inverse interpolation
+    alpha = pow((dist - MIN_POINT_RADIUS) / (MAX_POINT_RADIUS - MIN_POINT_RADIUS), 0.5);
   }
 
   if (alpha < 0.001) discard;

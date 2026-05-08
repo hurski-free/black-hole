@@ -23,13 +23,13 @@
 /**
  * Common gravitational constant, all gravity impacts will multiplies on this value
  */
-export const COMMON_GRAVITY_CONSTANT = 0.3;
+export const COMMON_GRAVITY_CONSTANT = 0.03;
 
 // *****************************************************
 // * STAR CONSTANTS PART
 // *****************************************************
 
-export const STR_GRAVITY_COEF = 1;
+export const STR_GRAVITY_MPL = 2;
 
 /**
  * Star will auto disappear if raduis is less than this value
@@ -111,7 +111,7 @@ export const BH_APPEAR_RADIUS = 10;
  */
 export const BH_SHOW_TIME_APPEAR_MIN_TIME = 10000;
 
-export const BH_GRAVITY_MPL = 10;
+export const BH_GRAVITY_MPL = 150;
 
 
 export const BH_STR_ABSORB_MIN_RADIUS = 250;
@@ -119,9 +119,9 @@ export const BH_STR_ABSORB_MIN_RADIUS = 250;
  * Additional distance to absorb star, 
  */
 export const BH_STR_ABSORB_RADIUS_MPL = 10;
-export const BH_STR_ABSORB_PTCS_GENERATE_MPL = 3;
+export const BH_STR_ABSORB_PTCS_GENERATE_MPL = 2;
 export const BH_STR_ABSORB_DELTA_RADIUS_MPL = 0.012;
-export const BH_STR_ABSORB_PTCS_MIN_RADIUS = 0.99;
-export const BH_STR_ABSORB_PTCS_MAX_RADIUS = 1.05;
+export const BH_STR_ABSORB_PTCS_MIN_RADIUS = 1.12;
+export const BH_STR_ABSORB_PTCS_MAX_RADIUS = 1.18;
 
 export const BG_COLLISION_COEF = 0.8;

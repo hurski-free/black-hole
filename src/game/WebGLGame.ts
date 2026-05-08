@@ -18,6 +18,7 @@ import { WebGL2dRender } from "./render/WebGL2Render";
 import { blackHoleShader } from "./WebGL/shaders/BlackHoleShader";
 import { particleShader } from "./WebGL/shaders/ParticleShader";
 import { starShader } from "./WebGL/shaders/StarShader";
+import { textShader } from "./WebGL/shaders/TextShader";
 import { GLProgram } from "./WebGL/WebGLProgram";
 
 interface IWebGLGameConfig {
@@ -46,6 +47,7 @@ export class WebGLGame extends Game<BlackHole, Star, Particle> {
         starShader: new GLProgram(cfg.ctx, starShader),
         particleShader: new GLProgram(cfg.ctx, particleShader),
         blackHoleShader: new GLProgram(cfg.ctx, blackHoleShader),
+        textShader: new GLProgram(cfg.ctx, textShader),
       },
     });
 
@@ -81,7 +83,26 @@ export class WebGLGame extends Game<BlackHole, Star, Particle> {
     star2.deltaRadius = 0;
     star2.isSupernova = false;
 
-    // this._blackHoleTimeRemains = FIRST_BLACK_HOLE_TIME_REMAINS * 10000;
+    // const star1 = this.stars.getNewObject();
+    // star1.x = -200;
+    // star1.y = 100;
+    // star1.velocityX = 0.3;
+    // star1.velocityY = 0.16;
+    // star1.accelerationX = 0;
+    // star1.accelerationY = 0;
+    // star1.radius = 40;
+    // star1.deltaRadius = 0;
+
+    // const blackHole = this.blackHoles.getNewObject();
+    // blackHole.x = 300;
+    // blackHole.y = 100;
+    // blackHole.velocityX = -0.1;
+    // blackHole.velocityY = -0.05;
+    // blackHole.accelerationX = 0;
+    // blackHole.accelerationY = 0;
+    // blackHole.deltaRadius = 0;
+    // blackHole.radius = 10;
+
     this._blackHoleTimeRemains = BH_FIRST_APPEAR_TIME_REMAINS;
   }
   protected tryBlackHoleAppear() {
@@ -108,6 +129,7 @@ export class WebGLGame extends Game<BlackHole, Star, Particle> {
     blackHole.velocityY = 0;
     blackHole.accelerationX = 0;
     blackHole.accelerationY = 0;
+    blackHole.deltaRadius = 0;
     blackHole.radius = BH_APPEAR_RADIUS;
 
     this._blackHoleTimeRemains = BH_NEXT_APPEAR_TIME_REMAINS;

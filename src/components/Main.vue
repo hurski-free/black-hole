@@ -64,10 +64,10 @@ function leaveGame() {
             <button
               type="button"
               class="primary"
-              :disabled="true"
+              :disabled="!webglSupported"
               @click="startWebgl"
             >
-              Start (not implemented yet)
+              Start
             </button>
           </section>
         </div>

@@ -17,4 +17,9 @@ export class BlackHole extends GameObject {
     this.countParticlesAbsorbed++;
     particle.state = 3;
   }
+
+  mergeBlackHole(other: BlackHole) {
+    this.radius = Math.sqrt(this.radius ** 2 + other.radius ** 2);
+    other.state = 3;
+  }
 }

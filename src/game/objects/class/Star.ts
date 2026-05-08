@@ -101,7 +101,7 @@ export class Star extends GameObject {
     this.colorRGB[2] = Math.abs(r - 1.5) - Math.abs(r - 1.0) + 0.5;
   }
 
-  absorb(other: Star) {
+  mergeStar(other: Star) {
     this.radius = Math.sqrt(this.radius ** 2 + other.radius ** 2);
     other.state = 3;
   }

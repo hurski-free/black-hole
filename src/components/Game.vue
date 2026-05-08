@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, shallowRef, onMounted, onBeforeUnmount, nextTick } from 'vue'
 import { Canvas2dGame } from '../game/Canvas2dGame'
+import { WebGLGame } from '../game/WebglGame';
 
 const props = withDefaults(
   defineProps<{
@@ -16,7 +17,7 @@ const emit = defineEmits<{
 
 const rootRef = ref<HTMLDivElement | null>(null)
 const canvasRef = ref<HTMLCanvasElement | null>(null)
-const gameRef = shallowRef<Canvas2dGame | null>(null)
+const gameRef = shallowRef<Canvas2dGame | WebGLGame | null>(null)
 // let glRef: WebGLRenderingContext | WebGL2RenderingContext | null = null
 let resizeObserver: ResizeObserver | null = null
 let isMouseDragging = false
@@ -46,7 +47,12 @@ function applyCanvasSize() {
 
     gameRef.value?.resizeCanvas(w, h)
   } else {
-    // TODO: call resize
+    const gl = canvas.getContext('webgl2')
+    if (gl) {
+      gl.viewport(0, 0, w, h)
+    }
+
+    gameRef.value?.resizeCanvas(w, h)
   }
 }
 
@@ -73,9 +79,30 @@ function initCanvas2dGame() {
   }, 100)
 }
 
-function togglePauseResume() {
-  if (props.mode !== 'canvas2d') return
+function initWebglGame() {
+  const canvas = canvasRef.value
+  if (!canvas) return
 
+  const gl = canvas.getContext('webgl2')
+  if (!gl) return
+
+  gameRef.value?.stop()
+  
+  const game = new WebGLGame({
+    ctx: gl,
+  })
+
+  setTimeout(() => {
+    gameRef.value = game
+    game.resizeCanvas(canvas.width, canvas.height, true)
+
+    if (props.autoStart) {
+      game.start()
+    }
+  }, 100)
+}
+
+function togglePauseResume() {
   const game = gameRef.value
   if (!game) return
 
@@ -87,8 +114,6 @@ function togglePauseResume() {
 }
 
 function toggleStartStop() {
-  if (props.mode !== 'canvas2d') return
-
   const game = gameRef.value
   if (!game) return
 
@@ -100,13 +125,10 @@ function toggleStartStop() {
 }
 
 function restartGame() {
-  if (props.mode !== 'canvas2d') return
   gameRef.value?.restart()
 }
 
 function onKeyDown(event: KeyboardEvent) {
-  if (props.mode !== 'canvas2d') return
-
   if (event.code === 'Space') {
     event.preventDefault()
     togglePauseResume()
@@ -131,8 +153,6 @@ function onCanvasMouseDown(event: MouseEvent) {
 }
 
 function onCanvasMouseMove(event: MouseEvent) {
-  if (props.mode !== 'canvas2d') return
-
   const game = gameRef.value
   if (!game) return
 
@@ -184,7 +204,7 @@ onMounted(() => {
     if (props.mode === 'canvas2d') {
       initCanvas2dGame()
     } else {
-      // TODO: init webgl game
+      initWebglGame()
     }
   })
 })
@@ -204,13 +224,13 @@ onBeforeUnmount(() => {
       <span class="mode-label">
         {{ mode === 'canvas2d' ? 'Canvas 2D' : 'WebGL' }}
       </span>
-      <button type="button" class="toolbar-btn" :disabled="mode !== 'canvas2d'" @click="togglePauseResume">
+      <button type="button" class="toolbar-btn" @click="togglePauseResume">
         Pause / Resume (Space)
       </button>
-      <button type="button" class="toolbar-btn" :disabled="mode !== 'canvas2d'" @click="toggleStartStop">
+      <button type="button" class="toolbar-btn" @click="toggleStartStop">
         Stop / Start (Enter)
       </button>
-      <button type="button" class="toolbar-btn" :disabled="mode !== 'canvas2d'" @click="restartGame">
+      <button type="button" class="toolbar-btn" @click="restartGame">
         Restart
       </button>
     </header>

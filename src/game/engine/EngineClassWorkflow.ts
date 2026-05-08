@@ -22,6 +22,7 @@ import {
   SNV_STAR_SPAWN_RADIUS,
   SNV_MIN_PTC_SPAWN,
   SNV_MAX_PTC_SPAWN,
+  BG_COLLISION_COEF,
 } from "../objects/const";
 import type { IEngine } from "./IEngine";
 import type { BlackHole } from "../objects/class/BlackHole";
@@ -52,6 +53,20 @@ export class EngineClassWorkflow implements IEngine<BlackHole, Star, Particle> {
         let dy = blackHoleI.y - blackHoleJ.y;
 
         let distance = Math.hypot(dx, dy);
+
+        if (blackHoleI.state === 2 && blackHoleJ.state === 2) {
+          if (distance < BG_COLLISION_COEF * (blackHoleI.radius + blackHoleJ.radius)) {
+            let aliveBlackHole: BlackHole;
+
+            if (blackHoleI.radius > blackHoleJ.radius) {
+              blackHoleI.mergeBlackHole(blackHoleJ);
+              aliveBlackHole = blackHoleI;
+            } else {
+              blackHoleJ.mergeBlackHole(blackHoleI);
+              aliveBlackHole = blackHoleJ;
+            }
+          }
+        }
 
         // Normalize oX and oY vectors
         dx /= distance;
@@ -120,8 +135,8 @@ export class EngineClassWorkflow implements IEngine<BlackHole, Star, Particle> {
               particle.x = starJ.x + random(BH_STR_ABSORB_PTCS_MIN_RADIUS, BH_STR_ABSORB_PTCS_MAX_RADIUS) * starJ.radius * Math.cos(angle);
               particle.y = starJ.y + random(BH_STR_ABSORB_PTCS_MIN_RADIUS, BH_STR_ABSORB_PTCS_MAX_RADIUS) * starJ.radius * Math.sin(angle);
 
-              particle.velocityX = starJ.velocityX;
-              particle.velocityY = starJ.velocityY;
+              particle.velocityX = starJ.velocityX * 0.8;
+              particle.velocityY = starJ.velocityY * 0.8;
 
               particle.accelerationX = ndx;
               particle.accelerationY = ndy;
@@ -249,9 +264,9 @@ export class EngineClassWorkflow implements IEngine<BlackHole, Star, Particle> {
           if (distance < STR_COLLISION_COEF * (starI.radius + starJ.radius)) {
             const radiusRatio = starI.radius / starJ.radius;
             if (radiusRatio >= STR_ABSORB_MPL) {
-              starI.absorb(starJ);
+              starI.mergeStar(starJ);
             } else if (1 / radiusRatio >= STR_ABSORB_MPL) { // invert ratio to check if J absorbs I
-              starJ.absorb(starI);
+              starJ.mergeStar(starI);
             } else {
               starI.state = 3;
               starJ.state = 3;

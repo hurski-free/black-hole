@@ -56,14 +56,10 @@ export class EngineClassWorkflow implements IEngine<BlackHole, Star, Particle> {
 
         if (blackHoleI.state === 2 && blackHoleJ.state === 2) {
           if (distance < BG_COLLISION_COEF * (blackHoleI.radius + blackHoleJ.radius)) {
-            let aliveBlackHole: BlackHole;
-
             if (blackHoleI.radius > blackHoleJ.radius) {
               blackHoleI.mergeBlackHole(blackHoleJ);
-              aliveBlackHole = blackHoleI;
             } else {
               blackHoleJ.mergeBlackHole(blackHoleI);
-              aliveBlackHole = blackHoleJ;
             }
           }
         }

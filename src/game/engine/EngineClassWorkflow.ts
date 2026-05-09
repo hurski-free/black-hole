@@ -20,6 +20,8 @@ import {
   SNV_MIN_PTC_SPAWN,
   SNV_MAX_PTC_SPAWN,
   BG_COLLISION_COEF,
+  PTC_ABSORBED_BY_BLACK_HOLE_SCORE,
+  SNV_EXPLOSION_SCORE,
 } from "../objects/const";
 import type { IEngine } from "./IEngine";
 import type { BlackHole } from "../objects/class/BlackHole";
@@ -156,6 +158,8 @@ export class EngineClassWorkflow implements IEngine<BlackHole, Star, Particle> {
         if (blackHoleI.state === 2 && particleJ.state === 2) {
           if (distance < blackHoleI.radius) {
             blackHoleI.absorbParticle(particleJ);
+            game._particlesAbsorbedByBlackHoles++;
+            game._score += PTC_ABSORBED_BY_BLACK_HOLE_SCORE;
           }
         }
 
@@ -232,6 +236,7 @@ export class EngineClassWorkflow implements IEngine<BlackHole, Star, Particle> {
           starI.state = 1;
           starI.isSupernova = false;
           starI.supernovaState = 0;
+          game._score += SNV_EXPLOSION_SCORE;
         }
 
         continue;

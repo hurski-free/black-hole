@@ -27,6 +27,9 @@ export abstract class Game<BH, S, P> {
   protected _stars: IObjectPool<S>;
   protected _particles: IObjectPool<P>;
 
+  public _score: number = 0;
+  public _particlesAbsorbedByBlackHoles: number = 0;
+
   protected animationFrameId: number = 0;
   protected _gameState: GameState = 'wait_for_start';
 

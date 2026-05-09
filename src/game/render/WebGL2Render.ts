@@ -237,10 +237,11 @@ export class WebGL2dRender implements IRender<BlackHole, Star, Particle> {
       gl.drawArrays(gl.POINTS, 0, countBlackHoles);
     }
     
-    this.renderText(game, `Stars: ${countStars}`, { x: 16, y: 16 });
-    this.renderText(game, `Black holes: ${countBlackHoles}`, { x: 16, y: 46 });
+    this.renderText(game, `Score: ${game._score.toFixed(3)}`, { x: 16, y: 16 });
+    this.renderText(game, `Stars: ${countStars}`, { x: 16, y: 46 });
+    this.renderText(game, `Black holes: ${countBlackHoles}`, { x: 16, y: 76 });
     this.renderText(game, `Particles: ${countParticles}`, { x: 16, y: game.height - 50 });
-    this.renderText(game, `Particles absorbed: ${blackHolesArray.reduce((acc, blackHole) => acc + blackHole.countParticlesAbsorbed, 0)}`, { x: 16, y: game.height - 20 });
+    this.renderText(game, `Particles absorbed: ${game._particlesAbsorbedByBlackHoles}`, { x: 16, y: game.height - 20 });
 
     if (game.blackHoleTimeRemains <= BH_SHOW_TIME_APPEAR_MIN_TIME) {
       const timeRemain = (game.blackHoleTimeRemains / 1000).toFixed(1); // round to 0.1 seconds

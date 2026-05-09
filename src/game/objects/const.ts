@@ -17,14 +17,16 @@
  */
 
 // *****************************************************
-// * GRAVITY CONSTANTS PART
+// * GLOBAL CONSTANTS PART
 // *****************************************************
 
 /**
  * Common gravitational constant, all gravity impacts will multiplies on this value
  */
-export const COMMON_GRAVITY_CONSTANT = 0.03;
+export const COMMON_GRAVITY_CONSTANT = 0.013;
 
+export const PTC_ABSORBED_BY_BLACK_HOLE_SCORE = 0.01;
+export const SNV_EXPLOSION_SCORE = 100;
 // *****************************************************
 // * STAR CONSTANTS PART
 // *****************************************************

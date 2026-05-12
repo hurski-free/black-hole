@@ -22,6 +22,7 @@ import {
   BG_COLLISION_COEF,
   PTC_ABSORBED_BY_BLACK_HOLE_SCORE,
   SNV_EXPLOSION_SCORE,
+  STR_MIN_RADIUS,
 } from "../objects/const";
 import type { IEngine } from "./IEngine";
 import type { BlackHole } from "../objects/class/BlackHole";
@@ -324,7 +325,7 @@ export class EngineClassWorkflow implements IEngine<BlackHole, Star, Particle> {
 
         let distance = Math.hypot(dx, dy);
 
-        if (distance < starI.radius * 0.8) {
+        if (distance < starI.radius * 0.8 && starI.radius > STR_MIN_RADIUS) {
           starI.absorbParticle(particleJ);
         }
 

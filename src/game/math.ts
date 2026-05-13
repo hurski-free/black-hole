@@ -18,3 +18,5 @@ export function circleSquare(radius: number) {
 export const PI_MUL_2 = 2 * Math.PI;
 export const PI_DIV_2 = Math.PI / 2;
 export const PI_DIV_4 = Math.PI / 4;
+export const PI_DIV_8 = Math.PI / 8;
+export const PI_DIV_16 = Math.PI / 16;

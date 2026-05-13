@@ -90,7 +90,7 @@ export class WebGLGame extends Game<BlackHole, Star, Particle> {
     // star1.velocityY = 0.16;
     // star1.accelerationX = 0;
     // star1.accelerationY = 0;
-    // star1.radius = 40;
+    // star1.radius = 60;
     // star1.deltaRadius = 0;
 
     // const blackHole = this.blackHoles.getNewObject();
@@ -101,7 +101,7 @@ export class WebGLGame extends Game<BlackHole, Star, Particle> {
     // blackHole.accelerationX = 0;
     // blackHole.accelerationY = 0;
     // blackHole.deltaRadius = 0;
-    // blackHole.radius = 10;
+    // blackHole.radius = 20;
 
     this._blackHoleTimeRemains = BH_FIRST_APPEAR_TIME_REMAINS;
   }

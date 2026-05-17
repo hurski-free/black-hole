@@ -29,9 +29,12 @@ import type { IEngine } from "./IEngine";
 import { OBJ_STATE_DELETED, OBJ_STATE_EXIST, OBJ_STATE_NEW } from "../objects/aos/Object";
 import type { AoSWorld } from "../world/AoSWorld";
 import type { IFrameView } from "../FrameView";
+import type { IGameSession } from "../GameSession";
 
 export class EngineAoS implements IEngine<AoSWorld> {
-  process(world: AoSWorld, frameView: IFrameView): void {
+  process(world: AoSWorld, frameView: IFrameView, gameSession: IGameSession): void {
+    void frameView;
+
     let blackHolesCount = world.blackHoles.activeCount;
     let starsCount = world.stars.activeCount;
     let particlesCount = world.particles.activeCount;
@@ -164,8 +167,8 @@ export class EngineAoS implements IEngine<AoSWorld> {
         if (blackHoleI.state === OBJ_STATE_EXIST && particleJ.state === OBJ_STATE_EXIST) {
           if (distance < blackHoleI.radius) {
             blackHoleI.absorbParticle(particleJ);
-            frameView.particlesAbsorbedByBlackHoles++;
-            frameView.score += PTC_ABSORBED_BY_BLACK_HOLE_SCORE;
+            gameSession.particlesAbsorbedByBlackHoles++;
+            gameSession.score += PTC_ABSORBED_BY_BLACK_HOLE_SCORE;
           }
         }
 
@@ -242,7 +245,7 @@ export class EngineAoS implements IEngine<AoSWorld> {
           starI.state = OBJ_STATE_NEW;
           starI.isSupernova = false;
           starI.supernovaState = 0;
-          frameView.score += SNV_EXPLOSION_SCORE;
+          gameSession.score += SNV_EXPLOSION_SCORE;
         }
 
         continue;

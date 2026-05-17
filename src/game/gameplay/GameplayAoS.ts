@@ -1,4 +1,5 @@
-import type { IFrameView } from "../FrameView";
+import type { ImmutableFrameView } from "../FrameView";
+import type { IGameSession } from "../GameSession";
 import { random } from "../math";
 import { OBJ_STATE_EXIST } from "../objects/aos/Object";
 import { BH_APPEAR_RADIUS, BH_FIRST_APPEAR_TIME_REMAINS, BH_NEXT_APPEAR_TIME_REMAINS, STR_HOVER_RADIUS_INC, STR_MIN_RADIUS } from "../objects/const";
@@ -9,7 +10,7 @@ export class GameplayAoS implements IGameplay<AoSWorld> {
   private starQueueIndex = 0;
   private blackHoleQueueIndex = 0;
 
-  initStartData(world: AoSWorld, frameView: IFrameView): void {
+  initStartData(world: AoSWorld, frameView: ImmutableFrameView, gameSession: IGameSession): void {
     const star1 = world.stars.getNewObject();
     star1.x = random(frameView.halfWidth * 0.2, frameView.halfWidth);
     star1.y = random(-frameView.halfHeight * 0.8, frameView.halfHeight * 0.8);
@@ -32,10 +33,10 @@ export class GameplayAoS implements IGameplay<AoSWorld> {
     star2.deltaRadius = 0;
     star2.isSupernova = false;
 
-    frameView.blackHoleTimeRemains = BH_FIRST_APPEAR_TIME_REMAINS;
+    gameSession.blackHoleTimeRemains = BH_FIRST_APPEAR_TIME_REMAINS;
   }
 
-  tryBlackHoleAppear(world: AoSWorld, frameView: IFrameView): void {
+  tryBlackHoleAppear(world: AoSWorld, frameView: ImmutableFrameView, gameSession: IGameSession): void {
     const blackHole = world.blackHoles.getNewObject();
 
     let x = frameView.camera[0];
@@ -62,10 +63,10 @@ export class GameplayAoS implements IGameplay<AoSWorld> {
     blackHole.deltaRadius = 0;
     blackHole.radius = BH_APPEAR_RADIUS;
 
-    frameView.blackHoleTimeRemains = BH_NEXT_APPEAR_TIME_REMAINS;
+    gameSession.blackHoleTimeRemains = BH_NEXT_APPEAR_TIME_REMAINS;
   }
 
-  hoverStar(world: AoSWorld, frameView: IFrameView, mouseX: number, mouseY: number): void {
+  hoverStar(world: AoSWorld, frameView: ImmutableFrameView, mouseX: number, mouseY: number): void {
     const x = mouseX + frameView.camera[0];
     const y = mouseY + frameView.camera[1];
 
@@ -85,7 +86,7 @@ export class GameplayAoS implements IGameplay<AoSWorld> {
     }
   }
 
-  moveToStar(world: AoSWorld, frameView: IFrameView): void {
+  moveToStar(world: AoSWorld, frameView: ImmutableFrameView): void {
     const starsCount = world.stars.activeCount;
     if (starsCount < 1) return;
 
@@ -104,7 +105,7 @@ export class GameplayAoS implements IGameplay<AoSWorld> {
     }
   }
 
-  moveToBlackHole(world: AoSWorld, frameView: IFrameView): void {
+  moveToBlackHole(world: AoSWorld, frameView: ImmutableFrameView): void {
     const blackHolesCount = world.blackHoles.activeCount;
     if (blackHolesCount < 1) return;
 

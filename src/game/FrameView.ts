@@ -1,4 +1,3 @@
-import type { GameState } from "./Game";
 import type { vec2 } from "./math";
 
 export interface IFrameView {
@@ -9,13 +8,6 @@ export interface IFrameView {
   halfHeight: number;
 
   camera: vec2;
-
-  gameState: GameState;
-
-  score: number;
-  particlesAbsorbedByBlackHoles: number;
-
-  blackHoleTimeRemains: number;
 }
 
 export type ImmutableFrameView = Readonly<IFrameView>;

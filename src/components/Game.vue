@@ -211,7 +211,7 @@ onBeforeUnmount(() => {
     <header class="game-toolbar">
       <button type="button" class="back-btn" @click="emit('leave')">{{ t('game.back') }}</button>
       <span class="mode-label">
-        {{ renderMode === 'canvas2d' ? t('game.modeCanvas2d') : t('game.modeWebgl') }}
+        {{ renderMode === 'canvas2d' ? t('game.modeCanvas2d') : t('game.modeWebgl2') }}
       </span>
       <button type="button" class="toolbar-btn" @click="togglePauseResume">
         {{ t('game.pauseResume') }}

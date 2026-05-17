@@ -1,6 +1,7 @@
 import type { Translator } from "../../i18n";
 import type { ImmutableFrameView } from "../FrameView";
 import { WEBGL2_BLACK_HOLE_POOL_CAPACITY, WEBGL2_PARTICLE_POOL_CAPACITY, WEBGL2_STAR_POOL_CAPACITY } from "../game-webgl2.const";
+import type { ImmutableGameSession } from "../GameSession";
 import type { vec4 } from "../math";
 import { BH_SHOW_TIME_APPEAR_MIN_TIME } from "../objects/const";
 import { blackHoleShader } from "../WebGL/shaders/BlackHoleShader";
@@ -154,7 +155,7 @@ export class WebGL2AosRender implements IRender<AoSWorld> {
     });
   }
 
-  render(world: AoSWorld, frameView: ImmutableFrameView): void {
+  render(world: AoSWorld, frameView: ImmutableFrameView, gameSession: ImmutableGameSession): void {
     const gl = this._gl;
 
     gl.clearColor(0.0, 0.0, 0.0, 1.0);
@@ -242,17 +243,17 @@ export class WebGL2AosRender implements IRender<AoSWorld> {
       gl.drawArrays(gl.POINTS, 0, countBlackHoles);
     }
     
-    this.renderText(frameView, this.translator.t('game.score', { score: frameView.score.toFixed(3) }), { x: 16, y: 16 });
+    this.renderText(frameView, this.translator.t('game.score', { score: gameSession.score.toFixed(3) }), { x: 16, y: 16 });
     this.renderText(frameView, this.translator.t('game.stars', { count: countStars }), { x: 16, y: 46 });
     this.renderText(frameView, this.translator.t('game.blackHoles', { count: countBlackHoles }), { x: 16, y: 76 });
 
     // draw in bottom left corner
     this.renderText(frameView, this.translator.t('game.particles', { count: countParticles }), { x: 16, y: frameView.height - 50 });
-    this.renderText(frameView, this.translator.t('game.particlesAbsorbedByBlackHoles', { count: frameView.particlesAbsorbedByBlackHoles }), { x: 16, y: frameView.height - 20 });
+    this.renderText(frameView, this.translator.t('game.particlesAbsorbedByBlackHoles', { count: gameSession.particlesAbsorbedByBlackHoles }), { x: 16, y: frameView.height - 20 });
 
-    if (frameView.blackHoleTimeRemains <= BH_SHOW_TIME_APPEAR_MIN_TIME) {
-      const timeRemain = (frameView.blackHoleTimeRemains / 1000).toFixed(1); // round to 0.1 seconds
-      const blackHoleColor = frameView.blackHoleTimeRemains / BH_SHOW_TIME_APPEAR_MIN_TIME;
+    if (gameSession.blackHoleTimeRemains <= BH_SHOW_TIME_APPEAR_MIN_TIME) {
+      const timeRemain = (gameSession.blackHoleTimeRemains / 1000).toFixed(1); // round to 0.1 seconds
+      const blackHoleColor = gameSession.blackHoleTimeRemains / BH_SHOW_TIME_APPEAR_MIN_TIME;
 
       const text = this.translator.t('game.blackHoleTimeRemains', { timeRemain });
       const textWidth = this.textRenderer.getTextWidth(text);

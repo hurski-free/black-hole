@@ -102,10 +102,6 @@ export class GameplayAoS implements IGameplay<AoSWorld> {
     if (this.starQueueIndex >= starsCount) {
       this.starQueueIndex = 0;
     }
-
-    if (frameView.gameState === 'paused') {
-      frameView.gameState = 'running';
-    }
   }
 
   moveToBlackHole(world: AoSWorld, frameView: IFrameView): void {
@@ -123,10 +119,6 @@ export class GameplayAoS implements IGameplay<AoSWorld> {
     this.blackHoleQueueIndex += 1;
     if (this.blackHoleQueueIndex >= blackHolesCount) {
       this.blackHoleQueueIndex = 0;
-    }
-
-    if (frameView.gameState === 'paused') {
-      frameView.gameState = 'running';
     }
   }
 }

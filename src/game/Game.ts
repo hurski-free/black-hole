@@ -1,7 +1,6 @@
 import type { IFrameView } from "./FrameView";
 import type { IEngine } from "./engine/IEngine";
 import type { IGameplay } from "./gameplay/IGameplay";
-import { type IVec2 } from "./math";
 import type { IRender } from "./render/IRender";
 import type { GameWorld } from "./world";
 
@@ -23,8 +22,6 @@ export class Game<W extends GameWorld> {
   protected animationFrameId: number = 0;
   protected _prevTimestamp: DOMHighResTimeStamp = 0;
 
-  protected _camera: IVec2 = { x: 0, y: 0 };
-
   constructor(world: W, engine: IEngine<W>, renderer: IRender<W>, gameplay: IGameplay<W>, frameView: IFrameView) {
     this.world = world;
     this.engine = engine;
@@ -39,8 +36,6 @@ export class Game<W extends GameWorld> {
 
   start() {
     if (this.frameView.gameState === 'wait_for_start') {
-      this.frameView.gameState = 'running';
-
       this.frameView.gameState = 'running';
 
       this.frameView.camera[0] = -this.frameView.halfWidth;

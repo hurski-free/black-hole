@@ -1,4 +1,5 @@
 
+import type { Translator } from "../i18n";
 import { EngineClassWorkflow } from "./engine/EngineClassWorkflow";
 import { Game } from "./Game";
 import { CANVAS2D_BLACK_HOLE_POOL_CAPACITY, CANVAS2D_PARTICLE_POOL_CAPACITY, CANVAS2D_STAR_POOL_CAPACITY } from "./game-canvas2d.const";
@@ -18,6 +19,7 @@ import { Canvas2dRender } from "./render/Canvas2dRender";
 
 interface ICanvas2dGameConfig {
   ctx: CanvasRenderingContext2D;
+  translator: Translator;
 }
 
 /**
@@ -38,7 +40,10 @@ export class Canvas2dGame extends Game<BlackHole, Star, Particle> {
 
     super({
       engine: new EngineClassWorkflow(),
-      renderer: new Canvas2dRender(cfg.ctx),
+      renderer: new Canvas2dRender({
+        ctx: cfg.ctx,
+        translator: cfg.translator,
+      }),
       blackHoles,
       stars,
       particles,

@@ -1,3 +1,4 @@
+import type { Translator } from "../../i18n";
 import type { Game } from "../Game";
 import type { BlackHole } from "../objects/class/BlackHole";
 import type { Particle } from "../objects/class/Particle";
@@ -5,11 +6,19 @@ import type { Star } from "../objects/class/Star";
 import { BH_SHOW_TIME_APPEAR_MIN_TIME } from "../objects/const";
 import type { IRender } from "./IRender";
 
+export interface ICanvas2dRenderConfig {
+  ctx: CanvasRenderingContext2D;
+  translator: Translator;
+}
+
 export class Canvas2dRender implements IRender<BlackHole, Star, Particle> {
+  readonly translator: Translator;
+  
   private ctx: CanvasRenderingContext2D;
 
-  constructor(ctx: CanvasRenderingContext2D) {
-    this.ctx = ctx;
+  constructor(cfg: ICanvas2dRenderConfig) {
+    this.translator = cfg.translator;
+    this.ctx = cfg.ctx;
   }
 
   render(game: Game<BlackHole, Star, Particle>): void {
@@ -74,16 +83,23 @@ export class Canvas2dRender implements IRender<BlackHole, Star, Particle> {
     ctx.restore();
 
     ctx.fillStyle = 'white';
-    ctx.font = '16px Arial';
-    ctx.fillText(`Stars: ${countStars}`, 10, 20);
-    ctx.fillText(`Particles: ${countParticles}`, 10, 40);
-    ctx.fillText(`Black holes: ${countBlackHoles}`, 10, 60);
+    ctx.font = '700 24px Inter, Arial, sans-serif';
+    ctx.fillText(this.translator.t('game.score', { score: game._score.toFixed(3) }), 16, 26);
+    ctx.fillText(this.translator.t('game.stars', { count: countStars }), 16, 56);
+    ctx.fillText(this.translator.t('game.blackHoles', { count: countBlackHoles }), 16, 86);
+
+    // draw in bottom left corner
+    ctx.fillText(this.translator.t('game.particles', { count: countParticles }), 16, game.height - 32);
+    ctx.fillText(this.translator.t('game.particlesAbsorbedByBlackHoles', { count: game._particlesAbsorbedByBlackHoles }), 16, game.height - 4);
 
     if (game.blackHoleTimeRemains <= BH_SHOW_TIME_APPEAR_MIN_TIME) {
       const timeRemain = (game.blackHoleTimeRemains / 1000).toFixed(1); // round to 0.1 seconds
       const blackHoleColor = Math.round(255 * game.blackHoleTimeRemains / BH_SHOW_TIME_APPEAR_MIN_TIME);
       ctx.fillStyle = `rgb(${255},${blackHoleColor},${blackHoleColor})`;
-      ctx.fillText(`Black hole time remains: ${timeRemain}`, 10, game.height - 10);
+      const text = this.translator.t('game.blackHoleTimeRemains', { timeRemain });
+      const textWidth = ctx.measureText(text).width;
+
+      ctx.fillText(text, game.halfWidth - textWidth / 2, game.height - 10);
     }
   }
 }

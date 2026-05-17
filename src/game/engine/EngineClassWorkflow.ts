@@ -319,32 +319,32 @@ export class EngineClassWorkflow implements IEngine<BlackHole, Star, Particle> {
       }
 
       // interaction starI with particles
-      for (let j = i + 1; j < particlesCount; j++) {
-        const particleJ = particlesArray[j];
+      // for (let j = i + 1; j < particlesCount; j++) {
+      //   const particleJ = particlesArray[j];
 
-        if (particleJ.state !== 2) {
-          continue;
-        }
+      //   if (particleJ.state !== 2) {
+      //     continue;
+      //   }
 
-        let dx = starI.x - particleJ.x;
-        let dy = starI.y - particleJ.y;
+      //   let dx = starI.x - particleJ.x;
+      //   let dy = starI.y - particleJ.y;
 
-        let distance = Math.hypot(dx, dy);
+      //   let distance = Math.hypot(dx, dy);
 
-        if (distance < starI.radius * 0.8 && starI.radius > STR_MIN_RADIUS) {
-          starI.absorbParticle(particleJ);
-        }
+      //   if (distance < starI.radius * 0.8 && starI.radius > STR_MIN_RADIUS) {
+      //     starI.absorbParticle(particleJ);
+      //   }
 
-        // Normalize oX and oY vectors
-        dx /= distance;
-        dy /= distance;
+      //   // Normalize oX and oY vectors
+      //   dx /= distance;
+      //   dy /= distance;
 
-        // square distance
-        distance *= distance;
+      //   // square distance
+      //   distance *= distance;
 
-        particleJ.accelerationX += dx * starI.impactingMass / distance;
-        particleJ.accelerationY += dy * starI.impactingMass / distance;
-      }
+      //   particleJ.accelerationX += dx * starI.impactingMass / distance;
+      //   particleJ.accelerationY += dy * starI.impactingMass / distance;
+      // }
     }
 
     // DEFRAGMENTATION PART

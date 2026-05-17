@@ -1,4 +1,4 @@
-
+import type { Translator } from "../i18n";
 import { EngineClassWorkflow } from "./engine/EngineClassWorkflow";
 import { Game } from "./Game";
 import { WEBGL_BLACK_HOLE_POOL_CAPACITY, WEBGL_PARTICLE_POOL_CAPACITY, WEBGL_STAR_POOL_CAPACITY } from "./game-webgl.const";
@@ -23,6 +23,7 @@ import { GLProgram } from "./WebGL/WebGLProgram";
 
 interface IWebGLGameConfig {
   ctx: WebGL2RenderingContext;
+  translator: Translator;
 }
 
 /**
@@ -43,6 +44,7 @@ export class WebGLGame extends Game<BlackHole, Star, Particle> {
 
     const renderer = new WebGL2dRender({
       ctx: cfg.ctx,
+      translator: cfg.translator,
       shaders: {
         starShader: new GLProgram(cfg.ctx, starShader),
         particleShader: new GLProgram(cfg.ctx, particleShader),

@@ -1,46 +1,69 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
-import Game from './Game.vue'
+import { ref, onMounted } from 'vue';
+import { useI18n } from 'vue-i18n';
+import Game from './Game.vue';
+import { LOCALE_STORAGE_KEY, type SupportedLanguages } from '../i18n';
 
-const canvas2dSupported = ref(false)
-const webglSupported = ref(false)
-const activeMode = ref<'canvas2d' | 'webgl' | null>(null)
+const { locale, t } = useI18n();
+
+const canvas2dSupported = ref(false);
+const webglSupported = ref(false);
+const activeMode = ref<'canvas2d' | 'webgl' | null>(null);
 
 onMounted(() => {
-  const probe = document.createElement('canvas')
-  canvas2dSupported.value = !!probe.getContext('2d')
+  const probe = document.createElement('canvas');
+  canvas2dSupported.value = !!probe.getContext('2d');
 
-  const webGlProbe = document.createElement('canvas')
-  webglSupported.value = !!webGlProbe.getContext('webgl2')
-})
+  const webGlProbe = document.createElement('canvas');
+  webglSupported.value = !!webGlProbe.getContext('webgl2');
+});
+
+function onLocaleChange(event: Event) {
+  const value = (event.target as HTMLSelectElement).value as SupportedLanguages;
+  locale.value = value;
+  localStorage.setItem(LOCALE_STORAGE_KEY, value);
+}
 
 function startCanvas2d() {
-  activeMode.value = 'canvas2d'
+  activeMode.value = 'canvas2d';
 }
 
 function startWebgl() {
-  activeMode.value = 'webgl'
+  activeMode.value = 'webgl';
 }
 
 function leaveGame() {
-  activeMode.value = null
+  activeMode.value = null;
 }
 </script>
 
 <template>
   <main class="main">
+    <label v-if="!activeMode" class="locale-switcher">
+      <!-- <span class="locale-label">{{ t('main.language') }}</span> -->
+      <select
+        class="locale-select"
+        :value="locale"
+        :aria-label="t('main.language')"
+        @change="onLocaleChange"
+      >
+        <option value="ru">RU</option>
+        <option value="en">EN</option>
+      </select>
+    </label>
+
     <template v-if="!activeMode">
       <div class="main-content">
-        <h1 class="title">Black hole</h1>
-        <p class="lead">Select game mode.</p>
-  
+        <h1 class="title">{{ t('main.title') }}</h1>
+        <p class="lead">{{ t('main.lead') }}</p>
+
         <div class="stack">
           <section class="card">
-            <h2 class="card-title">Canvas 2D</h2>
+            <h2 class="card-title">{{ t('main.canvas2d') }}</h2>
             <p class="card-body">
-              Supported:
+              {{ t('main.supported') }}
               <span :class="canvas2dSupported ? 'ok' : 'bad'">
-                {{ canvas2dSupported ? 'yes' : 'no' }}
+                {{ canvas2dSupported ? t('main.yes') : t('main.no') }}
               </span>
             </p>
             <button
@@ -49,16 +72,16 @@ function leaveGame() {
               :disabled="!canvas2dSupported"
               @click="startCanvas2d"
             >
-              Start
+              {{ t('main.start') }}
             </button>
           </section>
-  
+
           <section class="card">
-            <h2 class="card-title">WebGL</h2>
+            <h2 class="card-title">{{ t('main.webgl') }}</h2>
             <p class="card-body">
-              Supported:
+              {{ t('main.supported') }}
               <span :class="webglSupported ? 'ok' : 'bad'">
-                {{ webglSupported ? 'yes' : 'no' }}
+                {{ webglSupported ? t('main.yes') : t('main.no') }}
               </span>
             </p>
             <button
@@ -67,7 +90,7 @@ function leaveGame() {
               :disabled="!webglSupported"
               @click="startWebgl"
             >
-              Start
+              {{ t('main.start') }}
             </button>
           </section>
         </div>
@@ -85,6 +108,7 @@ function leaveGame() {
 
 <style scoped>
 .main {
+  position: relative;
   display: flex;
   flex-direction: column;
   flex: 1;
@@ -94,10 +118,42 @@ function leaveGame() {
   gap: 1.25rem;
 }
 
+.locale-switcher {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1100;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.locale-label {
+  user-select: none;
+}
+
+.locale-select {
+  font: inherit;
+  cursor: pointer;
+  padding: 0.3rem 0.5rem;
+  border-radius: 0.35rem;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+}
+
+.locale-select:hover {
+  border-color: var(--accent-dim);
+  color: var(--text-h);
+}
+
 .main-content {
   max-width: 40rem;
   width: 100%;
   margin: 0 auto;
+  padding-top: 2rem;
 }
 
 .title {

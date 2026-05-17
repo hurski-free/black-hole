@@ -1,161 +1,167 @@
 <script setup lang="ts">
-import { ref, shallowRef, onMounted, onBeforeUnmount, nextTick } from 'vue'
-import { Canvas2dGame } from '../game/Canvas2dGame'
+import { ref, shallowRef, onMounted, onBeforeUnmount, nextTick } from 'vue';
+import { useI18n } from 'vue-i18n';
+import { Canvas2dGame } from '../game/Canvas2dGame';
 import { WebGLGame } from '../game/WebGLGame';
+import { i18n } from '../i18n';
+
+const { t } = useI18n();
 
 const props = withDefaults(
   defineProps<{
-    mode: 'canvas2d' | 'webgl'
-    autoStart?: boolean
+    mode: 'canvas2d' | 'webgl';
+    autoStart?: boolean;
   }>(),
   { autoStart: true },
-)
+);
 
 const emit = defineEmits<{
-  leave: []
-}>()
+  leave: [];
+}>();
 
-const rootRef = ref<HTMLDivElement | null>(null)
-const canvasRef = ref<HTMLCanvasElement | null>(null)
-const gameRef = shallowRef<Canvas2dGame | WebGLGame | null>(null)
+const rootRef = ref<HTMLDivElement | null>(null);
+const canvasRef = ref<HTMLCanvasElement | null>(null);
+const gameRef = shallowRef<Canvas2dGame | WebGLGame | null>(null);
 // let glRef: WebGLRenderingContext | WebGL2RenderingContext | null = null
-let resizeObserver: ResizeObserver | null = null
-let isMouseDragging = false
-let lastMouseClientX = 0
-let lastMouseClientY = 0
+let resizeObserver: ResizeObserver | null = null;
+let isMouseDragging = false;
+let lastMouseClientX = 0;
+let lastMouseClientY = 0;
 let lasMouseMoveCall = 0;
 
 function applyCanvasSize() {
-  const root = rootRef.value
-  const canvas = canvasRef.value
-  if (!root || !canvas) return
+  const root = rootRef.value;
+  const canvas = canvasRef.value;
+  if (!root || !canvas) return;
 
-  const w = root.clientWidth
-  const h = root.clientHeight
-  if (w < 1 || h < 1) return
+  const w = root.clientWidth;
+  const h = root.clientHeight;
+  if (w < 1 || h < 1) return;
 
-  canvas.width = w
-  canvas.height = h
-  canvas.style.width = `${w}px`
-  canvas.style.height = `${h}px`
+  canvas.width = w;
+  canvas.height = h;
+  canvas.style.width = `${w}px`;
+  canvas.style.height = `${h}px`;
 
   if (props.mode === 'canvas2d') {
-    const ctx = canvas.getContext('2d')
+    const ctx = canvas.getContext('2d');
     if (ctx) {
       // scale canvas to match device pixel ratio
-      ctx.setTransform(1, 0, 0, 1, 0, 0)
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
     }
 
-    gameRef.value?.resizeCanvas(w, h)
+    gameRef.value?.resizeCanvas(w, h);
   } else {
-    const gl = canvas.getContext('webgl2')
+    const gl = canvas.getContext('webgl2');
     if (gl) {
-      gl.viewport(0, 0, w, h)
+      gl.viewport(0, 0, w, h);
     }
 
-    gameRef.value?.resizeCanvas(w, h)
+    gameRef.value?.resizeCanvas(w, h);
   }
 }
 
 function initCanvas2dGame() {
-  const canvas = canvasRef.value
-  if (!canvas) return
+  const canvas = canvasRef.value;
+  if (!canvas) return;
 
-  const ctx = canvas.getContext('2d')
-  if (!ctx) return
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return;
 
-  gameRef.value?.stop()
+  gameRef.value?.stop();
   
   const game = new Canvas2dGame({
     ctx,
-  })
+    translator: i18n.global,
+  });
 
   setTimeout(() => {
-    gameRef.value = game
-    game.resizeCanvas(canvas.width, canvas.height, true)
+    gameRef.value = game;
+    game.resizeCanvas(canvas.width, canvas.height, true);
 
     if (props.autoStart) {
-      game.start()
+      game.start();
     }
-  }, 100)
+  }, 100);
 }
 
 function initWebglGame() {
-  const canvas = canvasRef.value
-  if (!canvas) return
+  const canvas = canvasRef.value;
+  if (!canvas) return;
 
-  const gl = canvas.getContext('webgl2')
-  if (!gl) return
+  const gl = canvas.getContext('webgl2');
+  if (!gl) return;
 
-  gameRef.value?.stop()
+  gameRef.value?.stop();
   
   const game = new WebGLGame({
     ctx: gl,
-  })
+    translator: i18n.global,
+  });
 
   setTimeout(() => {
-    gameRef.value = game
-    game.resizeCanvas(canvas.width, canvas.height, true)
+    gameRef.value = game;
+    game.resizeCanvas(canvas.width, canvas.height, true);
 
     if (props.autoStart) {
-      game.start()
+      game.start();
     }
-  }, 100)
+  }, 100);
 }
 
 function togglePauseResume() {
-  const game = gameRef.value
-  if (!game) return
+  const game = gameRef.value;
+  if (!game) return;
 
   if (game.gameState === 'running') {
-    game.pause()
+    game.pause();
   } else if (game.gameState === 'paused') {
-    game.resume()
+    game.resume();
   }
 }
 
 function toggleStartStop() {
-  const game = gameRef.value
-  if (!game) return
+  const game = gameRef.value;
+  if (!game) return;
 
   if (game.gameState === 'wait_for_start') {
-    game.start()
+    game.start();
   } else {
-    game.stop()
+    game.stop();
   }
 }
 
 function restartGame() {
-  gameRef.value?.restart()
+  gameRef.value?.restart();
 }
 
 function onKeyDown(event: KeyboardEvent) {
   if (event.code === 'Space') {
-    event.preventDefault()
-    togglePauseResume()
+    event.preventDefault();
+    togglePauseResume();
   } else if (event.code === 'Enter') {
-    event.preventDefault()
-    toggleStartStop()
+    event.preventDefault();
+    toggleStartStop();
   } else if (event.code === 'KeyS') {
-    event.preventDefault()
-    gameRef.value?.moveToStar()
+    event.preventDefault();
+    gameRef.value?.moveToStar();
   } else if (event.code === 'KeyB') {
-    event.preventDefault()
-    gameRef.value?.moveToBlackHole()
+    event.preventDefault();
+    gameRef.value?.moveToBlackHole();
   }
 }
 
 function onCanvasMouseDown(event: MouseEvent) {
   if (event.button === 0) {
-    isMouseDragging = true
-    lastMouseClientX = event.clientX
-    lastMouseClientY = event.clientY
+    isMouseDragging = true;
+    lastMouseClientX = event.clientX;
+    lastMouseClientY = event.clientY;
   }
 }
 
 function onCanvasMouseMove(event: MouseEvent) {
-  const game = gameRef.value
-  if (!game) return
+  const game = gameRef.value;
+  if (!game) return;
 
   if (!isMouseDragging) {
     if (game.gameState === 'running') {
@@ -166,80 +172,80 @@ function onCanvasMouseMove(event: MouseEvent) {
       }
       lasMouseMoveCall = now;
 
-      const root = rootRef.value
-      if (!root) return
+      const root = rootRef.value;
+      if (!root) return;
 
-      const rect = root.getBoundingClientRect()
-      const mouseX = event.clientX - rect.left
-      const mouseY = event.clientY - rect.top
-      game.hoverStar(mouseX, mouseY)
+      const rect = root.getBoundingClientRect();
+      const mouseX = event.clientX - rect.left;
+      const mouseY = event.clientY - rect.top;
+      game.hoverStar(mouseX, mouseY);
     }
-    return
+    return;
   }
 
-  const deltaX = event.clientX - lastMouseClientX
-  const deltaY = event.clientY - lastMouseClientY
+  const deltaX = event.clientX - lastMouseClientX;
+  const deltaY = event.clientY - lastMouseClientY;
 
-  game.cameraMove(deltaX, deltaY)
+  game.cameraMove(deltaX, deltaY);
 
-  lastMouseClientX = event.clientX
-  lastMouseClientY = event.clientY
+  lastMouseClientX = event.clientX;
+  lastMouseClientY = event.clientY;
 }
 
 function stopCanvasDrag() {
-  isMouseDragging = false
+  isMouseDragging = false;
 }
 
 function teardownGame() {
-  stopCanvasDrag()
-  gameRef.value?.stop()
-  gameRef.value = null
+  stopCanvasDrag();
+  gameRef.value?.stop();
+  gameRef.value = null;
   // glRef = null
 }
 
 onMounted(() => {
-  window.addEventListener('keydown', onKeyDown)
+  window.addEventListener('keydown', onKeyDown);
 
   nextTick(() => {
     resizeObserver = new ResizeObserver(() => {
-      applyCanvasSize()
-    })
+      applyCanvasSize();
+    });
 
     if (rootRef.value) {
-      resizeObserver.observe(rootRef.value)
+      resizeObserver.observe(rootRef.value);
     }
 
     if (props.mode === 'canvas2d') {
-      initCanvas2dGame()
+      initCanvas2dGame();
     } else {
-      initWebglGame()
+      initWebglGame();
     }
-  })
-})
+  });
+});
 
 onBeforeUnmount(() => {
-  window.removeEventListener('keydown', onKeyDown)
-  resizeObserver?.disconnect()
-  resizeObserver = null
-  teardownGame()
-})
+  window.removeEventListener('keydown', onKeyDown);
+  resizeObserver?.disconnect();
+  resizeObserver = null;
+  teardownGame();
+});
 </script>
 
 <template>
   <div class="game-shell">
     <header class="game-toolbar">
-      <button type="button" class="back-btn" @click="emit('leave')">Back</button>
+      <button type="button" class="back-btn" @click="emit('leave')">{{ t('game.back') }}</button>
       <span class="mode-label">
-        {{ mode === 'canvas2d' ? 'Canvas 2D' : 'WebGL' }}
+        {{ mode === 'canvas2d' ? t('game.modeCanvas2d') : t('game.modeWebgl') }}
       </span>
       <button type="button" class="toolbar-btn" @click="togglePauseResume">
-        Pause / Resume (Space)
+        {{ t('game.pauseResume') }}
       </button>
       <button type="button" class="toolbar-btn" @click="toggleStartStop">
-        Stop / Start (Enter)
+        {{ t('game.stopStart') }}
       </button>
       <button type="button" class="toolbar-btn" @click="restartGame">
-        Restart
+        {{ t('game.restart') }}
       </button>
     </header>
     <div

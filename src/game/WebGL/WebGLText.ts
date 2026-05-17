@@ -28,7 +28,7 @@ export interface ITextLayoutGlyph extends IGlyphMetric {
   penY: number;
 }
 
-const DEFAULT_CHARSET = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789.,:;!?+-*/=_()[]{}<>\"'`~@#$%^&|\\ ";
+const DEFAULT_CHARSET = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyzАБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯабвгдеёжзийклмнопрстуфхцчшщъыьэюя0123456789.,:;!?+-*/=_()[]{}<>\"'`~@#$%^&|\\ ";
 
 export class WebGLText {
   private gl: WebGL2RenderingContext;

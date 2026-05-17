@@ -69,10 +69,10 @@ export const STR_ABSORB_MPL = 2;
 // * SUPERNOVA CONSTANTS PART
 // *****************************************************
 
-export const SNV_RADIUS_INC = 0.8;
-export const SNV_RADIUS_DEC = 2.8;
+export const SNV_RADIUS_INC = 2.8;
+export const SNV_RADIUS_DEC = 3.8;
 export const SNV_RADIUS_MIN = STR_MIN_RADIUS * 1.4;
-export const SNV_RADIUS_MAX = STR_MAX_RADIUS * 1.4;
+export const SNV_RADIUS_MAX = STR_MAX_RADIUS * 1.8;
 export const SNV_STAR_SPAWN_RADIUS = STR_MIN_RADIUS * 1.4;
 export const SNV_MIN_STRS_SPAWN = 0.7;
 export const SNV_MAX_STRS_SPAWN = 2.9;

@@ -1,0 +1,27 @@
+export default {
+  main: {
+    title: 'Чёрная дыра',
+    lead: 'Выберите режим игры.',
+    supported: 'Поддержка:',
+    yes: 'да',
+    no: 'нет',
+    start: 'Начать',
+    canvas2d: 'Canvas 2D',
+    webgl: 'WebGL',
+    language: 'Язык',
+  },
+  game: {
+    back: 'Назад',
+    modeCanvas2d: 'Canvas 2D',
+    modeWebgl: 'WebGL',
+    pauseResume: 'Пауза / Продолжить (Пробел)',
+    stopStart: 'Стоп / Старт (Enter)',
+    restart: 'Перезапуск',
+    score: 'Очки: {score}',
+    stars: 'Звезды: {count}',
+    blackHoles: 'Чёрные дыры: {count}',
+    particles: 'Частицы: {count}',
+    particlesAbsorbedByBlackHoles: 'Частицы поглощены чёрными дырами: {count}',
+    blackHoleTimeRemains: 'Время до появления чёрной дыры: {timeRemain}',
+  },
+};

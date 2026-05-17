@@ -1,3 +1,4 @@
+import type { Translator } from "../../i18n";
 import type { Game } from "../Game";
 import { WEBGL_BLACK_HOLE_POOL_CAPACITY, WEBGL_PARTICLE_POOL_CAPACITY, WEBGL_STAR_POOL_CAPACITY } from "../game-webgl.const";
 import type { vec4 } from "../math";
@@ -21,7 +22,7 @@ interface IDrawTextParams {
 
 export interface IWebGLRenderConfig {
   ctx: WebGL2RenderingContext;
-
+  translator: Translator;
   shaders: {
     starShader: GLProgram;
     particleShader: GLProgram;
@@ -32,6 +33,8 @@ export interface IWebGLRenderConfig {
 
 export class WebGL2dRender implements IRender<BlackHole, Star, Particle> {
   private _gl: WebGL2RenderingContext;
+  readonly translator: Translator;
+
   private shaders: {
     starShader: GLProgram;
     particleShader: GLProgram;
@@ -62,6 +65,7 @@ export class WebGL2dRender implements IRender<BlackHole, Star, Particle> {
     const gl = cfg.ctx;
 
     this._gl = gl;
+    this.translator = cfg.translator;
     this.shaders = cfg.shaders;
 
     gl.enable(gl.BLEND);
@@ -237,17 +241,19 @@ export class WebGL2dRender implements IRender<BlackHole, Star, Particle> {
       gl.drawArrays(gl.POINTS, 0, countBlackHoles);
     }
     
-    this.renderText(game, `Score: ${game._score.toFixed(3)}`, { x: 16, y: 16 });
-    this.renderText(game, `Stars: ${countStars}`, { x: 16, y: 46 });
-    this.renderText(game, `Black holes: ${countBlackHoles}`, { x: 16, y: 76 });
-    this.renderText(game, `Particles: ${countParticles}`, { x: 16, y: game.height - 50 });
-    this.renderText(game, `Particles absorbed: ${game._particlesAbsorbedByBlackHoles}`, { x: 16, y: game.height - 20 });
+    this.renderText(game, this.translator.t('game.score', { score: game._score.toFixed(3) }), { x: 16, y: 16 });
+    this.renderText(game, this.translator.t('game.stars', { count: countStars }), { x: 16, y: 46 });
+    this.renderText(game, this.translator.t('game.blackHoles', { count: countBlackHoles }), { x: 16, y: 76 });
+
+    // draw in bottom left corner
+    this.renderText(game, this.translator.t('game.particles', { count: countParticles }), { x: 16, y: game.height - 50 });
+    this.renderText(game, this.translator.t('game.particlesAbsorbedByBlackHoles', { count: game._particlesAbsorbedByBlackHoles }), { x: 16, y: game.height - 20 });
 
     if (game.blackHoleTimeRemains <= BH_SHOW_TIME_APPEAR_MIN_TIME) {
       const timeRemain = (game.blackHoleTimeRemains / 1000).toFixed(1); // round to 0.1 seconds
       const blackHoleColor = game.blackHoleTimeRemains / BH_SHOW_TIME_APPEAR_MIN_TIME;
 
-      const text = `Black hole time remains: ${timeRemain}`;
+      const text = this.translator.t('game.blackHoleTimeRemains', { timeRemain });
       const textWidth = this.textRenderer.getTextWidth(text);
       this.renderText(game, text, { x: game.halfWidth - textWidth / 2, y: game.height - 20, color: [1.0, blackHoleColor, blackHoleColor, 1.0] });
     }

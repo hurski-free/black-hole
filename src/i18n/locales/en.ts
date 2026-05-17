@@ -1,0 +1,27 @@
+export default {
+  main: {
+    title: 'Black hole',
+    lead: 'Select game mode.',
+    supported: 'Supported:',
+    yes: 'yes',
+    no: 'no',
+    start: 'Start',
+    canvas2d: 'Canvas 2D',
+    webgl: 'WebGL',
+    language: 'Language',
+  },
+  game: {
+    back: 'Back',
+    modeCanvas2d: 'Canvas 2D',
+    modeWebgl: 'WebGL',
+    pauseResume: 'Pause / Resume (Space)',
+    stopStart: 'Stop / Start (Enter)',
+    restart: 'Restart',
+    score: 'Score: {score}',
+    stars: 'Stars: {count}',
+    blackHoles: 'Black holes: {count}',
+    particles: 'Particles: {count}',
+    particlesAbsorbedByBlackHoles: 'Particles absorbed by black holes: {count}',
+    blackHoleTimeRemains: 'Black hole time remains: {timeRemain}',
+  },
+};

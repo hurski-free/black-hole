@@ -1,6 +1,7 @@
-import type { GameObject } from "./Object";
+import type { IObjectPool } from "./IObjectPool";
+import { OBJ_STATE_DELETED, OBJ_STATE_FREE, OBJ_STATE_NEW, type GameObject } from "./Object";
 
-export class ObjectPool<T extends GameObject> {
+export class ObjectPool<T extends GameObject> implements IObjectPool<T> {
   private pool: T[] = [];
 
   private _capacity: number;
@@ -39,7 +40,7 @@ export class ObjectPool<T extends GameObject> {
     const i = this._activeCount;
     this._activeCount++;
 
-    this.pool[i].state = 1;
+    this.pool[i].state = OBJ_STATE_NEW;
 
     return this.pool[i];
   }
@@ -51,14 +52,14 @@ export class ObjectPool<T extends GameObject> {
     let i = 0;
 
     while (i < this._activeCount) {
-      if (this.pool[i].state === 3) {
+      if (this.pool[i].state === OBJ_STATE_DELETED) {
         const lastIndex = this._activeCount - 1;
         const deletedObject = this.pool[i];
         const lastObject = this.pool[lastIndex];
 
         this.pool[i] = lastObject;
         this.pool[lastIndex] = deletedObject;
-        deletedObject.state = 0;
+        deletedObject.state = OBJ_STATE_FREE;
 
         this._activeCount--;
       } else {
@@ -75,7 +76,7 @@ export class ObjectPool<T extends GameObject> {
 
   clear() {
     for (let i = 0; i < this._activeCount; i++) {
-      this.pool[i].state = 0;
+      this.pool[i].state = OBJ_STATE_FREE;
     }
     this._activeCount = 0;
   }

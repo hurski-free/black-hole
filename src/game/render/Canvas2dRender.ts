@@ -84,13 +84,13 @@ export class Canvas2dRender implements IRender<BlackHole, Star, Particle> {
 
     ctx.fillStyle = 'white';
     ctx.font = '700 24px Inter, Arial, sans-serif';
-    ctx.fillText(this.translator.t('game.score', { score: game._score.toFixed(3) }), 16, 26);
+    ctx.fillText(this.translator.t('game.score', { score: game.score.toFixed(3) }), 16, 26);
     ctx.fillText(this.translator.t('game.stars', { count: countStars }), 16, 56);
     ctx.fillText(this.translator.t('game.blackHoles', { count: countBlackHoles }), 16, 86);
 
     // draw in bottom left corner
     ctx.fillText(this.translator.t('game.particles', { count: countParticles }), 16, game.height - 32);
-    ctx.fillText(this.translator.t('game.particlesAbsorbedByBlackHoles', { count: game._particlesAbsorbedByBlackHoles }), 16, game.height - 4);
+    ctx.fillText(this.translator.t('game.particlesAbsorbedByBlackHoles', { count: game.particlesAbsorbedByBlackHoles }), 16, game.height - 4);
 
     if (game.blackHoleTimeRemains <= BH_SHOW_TIME_APPEAR_MIN_TIME) {
       const timeRemain = (game.blackHoleTimeRemains / 1000).toFixed(1); // round to 0.1 seconds

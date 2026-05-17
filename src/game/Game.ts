@@ -27,8 +27,14 @@ export abstract class Game<BH, S, P> {
   protected _stars: IObjectPool<S>;
   protected _particles: IObjectPool<P>;
 
-  public _score: number = 0;
-  public _particlesAbsorbedByBlackHoles: number = 0;
+  /**
+   * Stats field, must be updatable from engine and readable from renderer
+   */
+  public score: number = 0;
+  /**
+   * Stats field, must be updatable from engine and readable from renderer
+   */
+  public particlesAbsorbedByBlackHoles: number = 0;
 
   protected animationFrameId: number = 0;
   protected _gameState: GameState = 'wait_for_start';

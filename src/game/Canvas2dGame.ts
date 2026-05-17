@@ -5,6 +5,7 @@ import { Game } from "./Game";
 import { CANVAS2D_BLACK_HOLE_POOL_CAPACITY, CANVAS2D_PARTICLE_POOL_CAPACITY, CANVAS2D_STAR_POOL_CAPACITY } from "./game-canvas2d.const";
 import { random } from "./math";
 import { BlackHole } from "./objects/class/BlackHole";
+import { OBJ_STATE_EXIST } from "./objects/class/Object";
 import { ObjectPool } from "./objects/class/ObjectPool";
 import { Particle } from "./objects/class/Particle";
 import { Star } from "./objects/class/Star";
@@ -114,7 +115,7 @@ export class Canvas2dGame extends Game<BlackHole, Star, Particle> {
     
     for (let i = 0; i < starsCount; i++) {
       // avoid hover on not existing or supernova, also star less than disappear radius not affected by hover
-      if (stars[i].state === 2 && !stars[i].isSupernova && stars[i].radius > STR_MIN_RADIUS) {
+      if (stars[i].state === OBJ_STATE_EXIST && !stars[i].isSupernova && stars[i].radius > STR_MIN_RADIUS) {
         const star = stars[i];
         const dis = Math.hypot(x - star.x, y - star.y);
         

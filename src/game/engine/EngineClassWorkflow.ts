@@ -30,6 +30,7 @@ import type { BlackHole } from "../objects/class/BlackHole";
 import type { Star } from "../objects/class/Star";
 import type { Particle } from "../objects/class/Particle";
 import type { Game } from "../Game";
+import { OBJ_STATE_DELETED, OBJ_STATE_EXIST, OBJ_STATE_NEW } from "../objects/class/Object";
 
 export class EngineClassWorkflow implements IEngine<BlackHole, Star, Particle> {
   process(game: Game<BlackHole, Star, Particle>): void {
@@ -55,7 +56,7 @@ export class EngineClassWorkflow implements IEngine<BlackHole, Star, Particle> {
 
         let distance = Math.hypot(dx, dy);
 
-        if (blackHoleI.state === 2 && blackHoleJ.state === 2) {
+        if (blackHoleI.state === OBJ_STATE_EXIST && blackHoleJ.state === OBJ_STATE_EXIST) {
           if (distance < BG_COLLISION_COEF * (blackHoleI.radius + blackHoleJ.radius)) {
             if (blackHoleI.radius > blackHoleJ.radius) {
               blackHoleI.mergeBlackHole(blackHoleJ);
@@ -89,7 +90,7 @@ export class EngineClassWorkflow implements IEngine<BlackHole, Star, Particle> {
         let distance = Math.hypot(dx, dy);
 
         // absorb particles from starJ to blackHoleI
-        if (starJ.state === 2 && !starJ.isSupernova) {
+        if (starJ.state === OBJ_STATE_EXIST && !starJ.isSupernova) {
           const starSurfaceGravity = starJ.impactingMass / (starJ.radius * starJ.radius);
           const blackHoleToStarSurfaceDistance = distance; // now it's just distance
           const blackHoleImpactOnStarSurface = blackHoleI.impactingMass / (blackHoleToStarSurfaceDistance * blackHoleToStarSurfaceDistance);
@@ -103,7 +104,7 @@ export class EngineClassWorkflow implements IEngine<BlackHole, Star, Particle> {
               : starJ.radius * BH_STR_ABSORB_DELTA_RADIUS_MPL * Math.min(2, absorbMpl);
 
             if (deltaRadius > starJ.radius || starJ.radius < STR_DISAPPEAR_RADIUS) {
-              starJ.state = 3;
+              starJ.state = OBJ_STATE_DELETED;
             } else {
               starJ.deltaRadius -= deltaRadius;
             }
@@ -153,7 +154,7 @@ export class EngineClassWorkflow implements IEngine<BlackHole, Star, Particle> {
       for (let j = 0; j < particlesCount; j++) {
         const particleJ = particlesArray[j];
 
-        if (particleJ.state !== 2) {
+        if (particleJ.state !== OBJ_STATE_EXIST) {
           continue;
         }
 
@@ -162,11 +163,11 @@ export class EngineClassWorkflow implements IEngine<BlackHole, Star, Particle> {
 
         let distance = Math.hypot(dx, dy);
 
-        if (blackHoleI.state === 2 && particleJ.state === 2) {
+        if (blackHoleI.state === OBJ_STATE_EXIST && particleJ.state === OBJ_STATE_EXIST) {
           if (distance < blackHoleI.radius) {
             blackHoleI.absorbParticle(particleJ);
-            game._particlesAbsorbedByBlackHoles++;
-            game._score += PTC_ABSORBED_BY_BLACK_HOLE_SCORE;
+            game.particlesAbsorbedByBlackHoles++;
+            game.score += PTC_ABSORBED_BY_BLACK_HOLE_SCORE;
           }
         }
 
@@ -240,10 +241,10 @@ export class EngineClassWorkflow implements IEngine<BlackHole, Star, Particle> {
             alpha += dAngle;
           }
         } else if (changedToState === 2) {
-          starI.state = 1;
+          starI.state = OBJ_STATE_NEW;
           starI.isSupernova = false;
           starI.supernovaState = 0;
-          game._score += SNV_EXPLOSION_SCORE;
+          game.score += SNV_EXPLOSION_SCORE;
         }
 
         continue;
@@ -258,7 +259,7 @@ export class EngineClassWorkflow implements IEngine<BlackHole, Star, Particle> {
 
         let distance = Math.hypot(dx, dy);
 
-        if (starI.state === 2 && starJ.state === 2 && !starI.isSupernova && !starJ.isSupernova) {
+        if (starI.state === OBJ_STATE_EXIST && starJ.state === OBJ_STATE_EXIST && !starI.isSupernova && !starJ.isSupernova) {
           if (distance < STR_COLLISION_COEF * (starI.radius + starJ.radius)) {
             const radiusRatio = starI.radius / starJ.radius;
             if (radiusRatio >= STR_ABSORB_MPL) {
@@ -266,8 +267,8 @@ export class EngineClassWorkflow implements IEngine<BlackHole, Star, Particle> {
             } else if (1 / radiusRatio >= STR_ABSORB_MPL) { // invert ratio to check if J absorbs I
               starJ.mergeStar(starI);
             } else {
-              starI.state = 3;
-              starJ.state = 3;
+              starI.state = OBJ_STATE_DELETED;
+              starJ.state = OBJ_STATE_DELETED;
 
               const countForI = Math.floor(starI.radius * random(PTC_AFTER_STR_EXPL_MIN_COUNT, PTC_AFTER_STR_EXPL_MAX_COUNT));
               let alpha = 0;
@@ -322,7 +323,7 @@ export class EngineClassWorkflow implements IEngine<BlackHole, Star, Particle> {
       // for (let j = i + 1; j < particlesCount; j++) {
       //   const particleJ = particlesArray[j];
 
-      //   if (particleJ.state !== 2) {
+      //   if (particleJ.state !== OBJ_STATE_EXIST) {
       //     continue;
       //   }
 

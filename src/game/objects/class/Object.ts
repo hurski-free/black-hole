@@ -13,6 +13,11 @@ import { COMMON_GRAVITY_CONSTANT } from "../const";
  */
 export type ObjectState = 0 | 1 | 2 | 3;
 
+export const OBJ_STATE_FREE    = 0;
+export const OBJ_STATE_NEW     = 1;
+export const OBJ_STATE_EXIST   = 2;
+export const OBJ_STATE_DELETED = 3;
+
 export class GameObject {
   /**
    * 0 - free - object is not in the game
@@ -26,7 +31,7 @@ export class GameObject {
    * 
    * 3 - deleted - object is deleted from the game, will be removed in next tick
    */
-  state: ObjectState = 0;
+  state: ObjectState = OBJ_STATE_FREE;
 
   radius: number = 0;
   deltaRadius: number = 0;
@@ -57,7 +62,7 @@ export class GameObject {
     this.deltaRadius = 0;
     this.computeImpactingMass();
 
-    this.state = 2;
+    this.state = OBJ_STATE_EXIST;
     this.accelerationX = 0;
     this.accelerationY = 0;
   }

@@ -1,6 +1,6 @@
 import { circleSquare } from "../../math";
 import { BH_GRAVITY_MPL } from "../const";
-import { GameObject } from "./Object";
+import { OBJ_STATE_DELETED, GameObject } from "./Object";
 import type { Particle } from "./Particle";
 
 export class BlackHole extends GameObject {
@@ -11,11 +11,11 @@ export class BlackHole extends GameObject {
 
   absorbParticle(particle: Particle) {
     this.deltaRadius += Math.PI / (circleSquare(this.radius));
-    particle.state = 3;
+    particle.state = OBJ_STATE_DELETED;
   }
 
   mergeBlackHole(other: BlackHole) {
     this.radius = Math.sqrt(this.radius ** 2 + other.radius ** 2);
-    other.state = 3;
+    other.state = OBJ_STATE_DELETED;
   }
 }

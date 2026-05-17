@@ -4,6 +4,7 @@ import { Game } from "./Game";
 import { WEBGL_BLACK_HOLE_POOL_CAPACITY, WEBGL_PARTICLE_POOL_CAPACITY, WEBGL_STAR_POOL_CAPACITY } from "./game-webgl.const";
 import { random } from "./math";
 import { BlackHole } from "./objects/class/BlackHole";
+import { OBJ_STATE_EXIST } from "./objects/class/Object";
 import { ObjectPool } from "./objects/class/ObjectPool";
 import { Particle } from "./objects/class/Particle";
 import { Star } from "./objects/class/Star";
@@ -85,26 +86,6 @@ export class WebGLGame extends Game<BlackHole, Star, Particle> {
     star2.deltaRadius = 0;
     star2.isSupernova = false;
 
-    // const star1 = this.stars.getNewObject();
-    // star1.x = -200;
-    // star1.y = 100;
-    // star1.velocityX = 0.3;
-    // star1.velocityY = 0.16;
-    // star1.accelerationX = 0;
-    // star1.accelerationY = 0;
-    // star1.radius = 60;
-    // star1.deltaRadius = 0;
-
-    // const blackHole = this.blackHoles.getNewObject();
-    // blackHole.x = 300;
-    // blackHole.y = 100;
-    // blackHole.velocityX = -0.1;
-    // blackHole.velocityY = -0.05;
-    // blackHole.accelerationX = 0;
-    // blackHole.accelerationY = 0;
-    // blackHole.deltaRadius = 0;
-    // blackHole.radius = 20;
-
     this._blackHoleTimeRemains = BH_FIRST_APPEAR_TIME_REMAINS;
   }
   protected tryBlackHoleAppear() {
@@ -146,7 +127,7 @@ export class WebGLGame extends Game<BlackHole, Star, Particle> {
     
     for (let i = 0; i < starsCount; i++) {
       // avoid hover on not existing or supernova, also star less than disappear radius not affected by hover
-      if (stars[i].state === 2 && !stars[i].isSupernova && stars[i].radius > STR_MIN_RADIUS) {
+      if (stars[i].state === OBJ_STATE_EXIST && !stars[i].isSupernova && stars[i].radius > STR_MIN_RADIUS) {
         const star = stars[i];
         const dis = Math.hypot(x - star.x, y - star.y);
         

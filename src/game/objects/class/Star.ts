@@ -11,7 +11,7 @@ import {
   SNV_RADIUS_MAX,
   SNV_RADIUS_MIN,
 } from "../const";
-import { GameObject } from "./Object";
+import { GameObject, OBJ_STATE_DELETED } from "./Object";
 import type { Particle } from "./Particle";
 
 /**
@@ -65,7 +65,7 @@ export class Star extends GameObject {
     }
 
     if (this.radius < STR_DISAPPEAR_RADIUS) {
-      this.state = 3;
+      this.state = OBJ_STATE_DELETED;
     }
 
     this.computeColorRGB();
@@ -104,11 +104,11 @@ export class Star extends GameObject {
 
   absorbParticle(particle: Particle) {
     this.deltaRadius += Math.PI / (circleSquare(this.radius));
-    particle.state = 3;
+    particle.state = OBJ_STATE_DELETED;
   }
 
   mergeStar(other: Star) {
     this.radius = Math.sqrt(this.radius ** 2 + other.radius ** 2);
-    other.state = 3;
+    other.state = OBJ_STATE_DELETED;
   }
 }

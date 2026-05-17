@@ -1,6 +1,6 @@
 export default {
   main: {
-    title: 'Чёрная дыра',
+    title: 'Black hole',
     lead: 'Выберите режим игры.',
     supported: 'Поддержка:',
     yes: 'да',

@@ -22,7 +22,7 @@ import {
   BG_COLLISION_COEF,
   PTC_ABSORBED_BY_BLACK_HOLE_SCORE,
   SNV_EXPLOSION_SCORE,
-  STR_MIN_RADIUS,
+  // STR_MIN_RADIUS,
   BH_STR_ABSORB_DELTA_RADIUS_MPL,
 } from "../objects/const";
 import type { IEngine } from "./IEngine";

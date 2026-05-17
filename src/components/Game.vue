@@ -1,18 +1,25 @@
 <script setup lang="ts">
 import { ref, shallowRef, onMounted, onBeforeUnmount, nextTick } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { Canvas2dGame } from '../game/Canvas2dGame';
-import { WebGLGame } from '../game/WebGLGame';
 import { i18n } from '../i18n';
+
+import { createGame } from '../game/fabric';
+
+import type { Game } from '../game/Game';
+import type { GameWorld } from '../game/world';
 
 const { t } = useI18n();
 
 const props = withDefaults(
   defineProps<{
-    mode: 'canvas2d' | 'webgl';
+    renderMode: 'canvas2d' | 'webgl2';
+    objectsMode?: 'aos' | 'soa';
     autoStart?: boolean;
   }>(),
-  { autoStart: true },
+  {
+    autoStart: true,
+    objectsMode: 'aos',
+  },
 );
 
 const emit = defineEmits<{
@@ -21,13 +28,12 @@ const emit = defineEmits<{
 
 const rootRef = ref<HTMLDivElement | null>(null);
 const canvasRef = ref<HTMLCanvasElement | null>(null);
-const gameRef = shallowRef<Canvas2dGame | WebGLGame | null>(null);
+const gameRef = shallowRef<Game<GameWorld> | null>(null);
 // let glRef: WebGLRenderingContext | WebGL2RenderingContext | null = null
 let resizeObserver: ResizeObserver | null = null;
 let isMouseDragging = false;
 let lastMouseClientX = 0;
 let lastMouseClientY = 0;
-let lasMouseMoveCall = 0;
 
 function applyCanvasSize() {
   const root = rootRef.value;
@@ -43,7 +49,7 @@ function applyCanvasSize() {
   canvas.style.width = `${w}px`;
   canvas.style.height = `${h}px`;
 
-  if (props.mode === 'canvas2d') {
+  if (props.renderMode === 'canvas2d') {
     const ctx = canvas.getContext('2d');
     if (ctx) {
       // scale canvas to match device pixel ratio
@@ -61,43 +67,23 @@ function applyCanvasSize() {
   }
 }
 
-function initCanvas2dGame() {
+function initGame() {
   const canvas = canvasRef.value;
   if (!canvas) return;
 
-  const ctx = canvas.getContext('2d');
+  let ctx: CanvasRenderingContext2D | WebGL2RenderingContext | null = null;
+
+  if (props.renderMode === 'canvas2d') {
+    ctx = canvas.getContext('2d');
+  } else {
+    ctx = canvas.getContext('webgl2');
+  }
+
   if (!ctx) return;
 
   gameRef.value?.stop();
   
-  const game = new Canvas2dGame({
-    ctx,
-    translator: i18n.global,
-  });
-
-  setTimeout(() => {
-    gameRef.value = game;
-    game.resizeCanvas(canvas.width, canvas.height, true);
-
-    if (props.autoStart) {
-      game.start();
-    }
-  }, 100);
-}
-
-function initWebglGame() {
-  const canvas = canvasRef.value;
-  if (!canvas) return;
-
-  const gl = canvas.getContext('webgl2');
-  if (!gl) return;
-
-  gameRef.value?.stop();
-  
-  const game = new WebGLGame({
-    ctx: gl,
-    translator: i18n.global,
-  });
+  const game = createGame(`${props.renderMode}-${props.objectsMode}`, ctx, i18n.global);
 
   setTimeout(() => {
     gameRef.value = game;
@@ -165,13 +151,6 @@ function onCanvasMouseMove(event: MouseEvent) {
 
   if (!isMouseDragging) {
     if (game.gameState === 'running') {
-      // limit mouse hover call to 60fps
-      const now = Date.now();
-      if (now - lasMouseMoveCall < 16) {
-        return;
-      }
-      lasMouseMoveCall = now;
-
       const root = rootRef.value;
       if (!root) return;
 
@@ -215,11 +194,7 @@ onMounted(() => {
       resizeObserver.observe(rootRef.value);
     }
 
-    if (props.mode === 'canvas2d') {
-      initCanvas2dGame();
-    } else {
-      initWebglGame();
-    }
+    initGame();
   });
 });
 
@@ -236,7 +211,7 @@ onBeforeUnmount(() => {
     <header class="game-toolbar">
       <button type="button" class="back-btn" @click="emit('leave')">{{ t('game.back') }}</button>
       <span class="mode-label">
-        {{ mode === 'canvas2d' ? t('game.modeCanvas2d') : t('game.modeWebgl') }}
+        {{ renderMode === 'canvas2d' ? t('game.modeCanvas2d') : t('game.modeWebgl') }}
       </span>
       <button type="button" class="toolbar-btn" @click="togglePauseResume">
         {{ t('game.pauseResume') }}

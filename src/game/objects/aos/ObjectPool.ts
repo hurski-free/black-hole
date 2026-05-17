@@ -68,12 +68,6 @@ export class ObjectPool<T extends GameObject> implements IObjectPool<T> {
     }
   }
 
-  update() {
-    for (let i = 0; i < this._activeCount; i++) {
-      this.pool[i].update();
-    }
-  }
-
   clear() {
     for (let i = 0; i < this._activeCount; i++) {
       this.pool[i].state = OBJ_STATE_FREE;
@@ -81,7 +75,7 @@ export class ObjectPool<T extends GameObject> implements IObjectPool<T> {
     this._activeCount = 0;
   }
 
-  free() {
+  freeMemory() {
     (this.pool as unknown) = null;
     this._capacity = 0;
     this._activeCount = 0;

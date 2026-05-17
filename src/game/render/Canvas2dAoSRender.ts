@@ -1,9 +1,7 @@
 import type { Translator } from "../../i18n";
-import type { Game } from "../Game";
-import type { BlackHole } from "../objects/class/BlackHole";
-import type { Particle } from "../objects/class/Particle";
-import type { Star } from "../objects/class/Star";
+import type { ImmutableFrameView } from "../FrameView";
 import { BH_SHOW_TIME_APPEAR_MIN_TIME } from "../objects/const";
+import type { AoSWorld } from "../world/AoSWorld";
 import type { IRender } from "./IRender";
 
 export interface ICanvas2dRenderConfig {
@@ -11,7 +9,7 @@ export interface ICanvas2dRenderConfig {
   translator: Translator;
 }
 
-export class Canvas2dRender implements IRender<BlackHole, Star, Particle> {
+export class Canvas2dAoSRender implements IRender<AoSWorld> {
   readonly translator: Translator;
   
   private ctx: CanvasRenderingContext2D;
@@ -21,21 +19,21 @@ export class Canvas2dRender implements IRender<BlackHole, Star, Particle> {
     this.ctx = cfg.ctx;
   }
 
-  render(game: Game<BlackHole, Star, Particle>): void {
+  render(world: AoSWorld, frameView: ImmutableFrameView): void {
     const ctx = this.ctx;
     
     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 
     ctx.save();
-    ctx.translate(-game.camera.x, -game.camera.y);
+    ctx.translate(-frameView.camera[0], -frameView.camera[1]);
 
-    const countStars = game.stars.activeCount;
-    const countParticles = game.particles.activeCount;
-    const countBlackHoles = game.blackHoles.activeCount;
+    const countStars = world.stars.activeCount;
+    const countParticles = world.particles.activeCount;
+    const countBlackHoles = world.blackHoles.activeCount;
 
-    const stars = game.stars.getArray();
-    const particles = game.particles.getArray();
-    const blackHoles = game.blackHoles.getArray();
+    const stars = world.stars.getArray();
+    const particles = world.particles.getArray();
+    const blackHoles = world.blackHoles.getArray();
 
     for (let i = 0; i < countParticles; i++) {
       ctx.fillStyle = 'white';
@@ -84,22 +82,22 @@ export class Canvas2dRender implements IRender<BlackHole, Star, Particle> {
 
     ctx.fillStyle = 'white';
     ctx.font = '700 24px Inter, Arial, sans-serif';
-    ctx.fillText(this.translator.t('game.score', { score: game.score.toFixed(3) }), 16, 26);
+    ctx.fillText(this.translator.t('game.score', { score: frameView.score.toFixed(3) }), 16, 26);
     ctx.fillText(this.translator.t('game.stars', { count: countStars }), 16, 56);
     ctx.fillText(this.translator.t('game.blackHoles', { count: countBlackHoles }), 16, 86);
 
     // draw in bottom left corner
-    ctx.fillText(this.translator.t('game.particles', { count: countParticles }), 16, game.height - 32);
-    ctx.fillText(this.translator.t('game.particlesAbsorbedByBlackHoles', { count: game.particlesAbsorbedByBlackHoles }), 16, game.height - 4);
+    ctx.fillText(this.translator.t('game.particles', { count: countParticles }), 16, frameView.height - 32);
+    ctx.fillText(this.translator.t('game.particlesAbsorbedByBlackHoles', { count: frameView.particlesAbsorbedByBlackHoles }), 16, frameView.height - 4);
 
-    if (game.blackHoleTimeRemains <= BH_SHOW_TIME_APPEAR_MIN_TIME) {
-      const timeRemain = (game.blackHoleTimeRemains / 1000).toFixed(1); // round to 0.1 seconds
-      const blackHoleColor = Math.round(255 * game.blackHoleTimeRemains / BH_SHOW_TIME_APPEAR_MIN_TIME);
+    if (frameView.blackHoleTimeRemains <= BH_SHOW_TIME_APPEAR_MIN_TIME) {
+      const timeRemain = (frameView.blackHoleTimeRemains / 1000).toFixed(1); // round to 0.1 seconds
+      const blackHoleColor = Math.round(255 * frameView.blackHoleTimeRemains / BH_SHOW_TIME_APPEAR_MIN_TIME);
       ctx.fillStyle = `rgb(${255},${blackHoleColor},${blackHoleColor})`;
       const text = this.translator.t('game.blackHoleTimeRemains', { timeRemain });
       const textWidth = ctx.measureText(text).width;
 
-      ctx.fillText(text, game.halfWidth - textWidth / 2, game.height - 10);
+      ctx.fillText(text, frameView.halfWidth - textWidth / 2, frameView.height - 10);
     }
   }
 }

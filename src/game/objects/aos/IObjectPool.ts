@@ -4,16 +4,12 @@ export interface IObjectPool<T> {
   /**
    * Get all objects in the pool
    * 
-   * WARN: method only for pool of classes, not for SoA
-   * 
    * @returns all objects in the pool
    */
   getArray(): Readonly<T[]>;
 
   /**
    * Throws an error if the index is out of bounds
-   * 
-   * WARN: method only for pool of classes, not for SoA
    * 
    * @param index - index of the object in the pool
    * @returns the object at the given index
@@ -22,8 +18,6 @@ export interface IObjectPool<T> {
 
   /**
    * Get a new object from the pool and set in to new state
-   * 
-   * WARN: For SoA return index of the elements
    * 
    * @returns the new object
    */
@@ -42,5 +36,5 @@ export interface IObjectPool<T> {
   /**
    * Free the pool and set it to null
    */
-  free(): void;
+  freeMemory(): void;
 }

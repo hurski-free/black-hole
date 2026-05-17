@@ -61,13 +61,13 @@ export class WebGLText {
     this.canvas.height = this._height;
     const ctx = this.canvas.getContext("2d", { alpha: true });
     if (!ctx) {
-      throw new Error("Failed to create 2D canvas context for WebGL text");
+      throw new Error("Failed to create 2D canvas context for WebGL2 text");
     }
     this.ctx = ctx;
 
     const texture = this.gl.createTexture();
     if (!texture) {
-      throw new Error("Failed to create texture for WebGL text");
+      throw new Error("Failed to create texture for WebGL2 text");
     }
     this._texture = texture;
     this.buildAtlas();

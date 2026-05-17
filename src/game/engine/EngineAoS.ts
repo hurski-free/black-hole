@@ -26,21 +26,19 @@ import {
   BH_STR_ABSORB_DELTA_RADIUS_MPL,
 } from "../objects/const";
 import type { IEngine } from "./IEngine";
-import type { BlackHole } from "../objects/class/BlackHole";
-import type { Star } from "../objects/class/Star";
-import type { Particle } from "../objects/class/Particle";
-import type { Game } from "../Game";
-import { OBJ_STATE_DELETED, OBJ_STATE_EXIST, OBJ_STATE_NEW } from "../objects/class/Object";
+import { OBJ_STATE_DELETED, OBJ_STATE_EXIST, OBJ_STATE_NEW } from "../objects/aos/Object";
+import type { AoSWorld } from "../world/AoSWorld";
+import type { IFrameView } from "../FrameView";
 
-export class EngineClassWorkflow implements IEngine<BlackHole, Star, Particle> {
-  process(game: Game<BlackHole, Star, Particle>): void {
-    let blackHolesCount = game.blackHoles.activeCount;
-    let starsCount = game.stars.activeCount;
-    let particlesCount = game.particles.activeCount;
+export class EngineAoS implements IEngine<AoSWorld> {
+  process(world: AoSWorld, frameView: IFrameView): void {
+    let blackHolesCount = world.blackHoles.activeCount;
+    let starsCount = world.stars.activeCount;
+    let particlesCount = world.particles.activeCount;
 
-    const blackHolesArray = game.blackHoles.getArray();
-    const starsArray = game.stars.getArray();
-    const particlesArray = game.particles.getArray();
+    const blackHolesArray = world.blackHoles.getArray();
+    const starsArray = world.stars.getArray();
+    const particlesArray = world.particles.getArray();
 
     // ENGINE PART
 
@@ -121,7 +119,7 @@ export class EngineClassWorkflow implements IEngine<BlackHole, Star, Particle> {
             const ndy = dy * blackHoleI.impactingMass / distance ** 3;
 
             for (let k = 0; k < countParticles; k++) {
-              const particle = game.particles.getNewObject();
+              const particle = world.particles.getNewObject();
               const angle = random(alpha - dangle, alpha + dangle);
 
               particle.x = starJ.x + random(BH_STR_ABSORB_PTCS_MIN_RADIUS, BH_STR_ABSORB_PTCS_MAX_RADIUS) * starJ.radius * Math.cos(angle);
@@ -166,8 +164,8 @@ export class EngineClassWorkflow implements IEngine<BlackHole, Star, Particle> {
         if (blackHoleI.state === OBJ_STATE_EXIST && particleJ.state === OBJ_STATE_EXIST) {
           if (distance < blackHoleI.radius) {
             blackHoleI.absorbParticle(particleJ);
-            game.particlesAbsorbedByBlackHoles++;
-            game.score += PTC_ABSORBED_BY_BLACK_HOLE_SCORE;
+            frameView.particlesAbsorbedByBlackHoles++;
+            frameView.score += PTC_ABSORBED_BY_BLACK_HOLE_SCORE;
           }
         }
 
@@ -200,7 +198,7 @@ export class EngineClassWorkflow implements IEngine<BlackHole, Star, Particle> {
           let velocity = 0;
 
           for (let j = 0; j < countStars; j++) {
-            const star = game.stars.getNewObject();
+            const star = world.stars.getNewObject();
 
             alpha += random(0, dAngle * 0.7);
             velocity = random(SNV_STR_SPAWN_MIN_VELO, SNV_STR_SPAWN_MAX_VELO);
@@ -224,7 +222,7 @@ export class EngineClassWorkflow implements IEngine<BlackHole, Star, Particle> {
           dAngle = PI_MUL_2 / countParticles;
 
           for (let j = 0; j < countParticles; j++) {
-            const particle = game.particles.getNewObject();
+            const particle = world.particles.getNewObject();
 
             alpha += random(0, dAngle * 0.7);
             velocity = random(SNV_STR_SPAWN_MIN_VELO, SNV_STR_SPAWN_MAX_VELO);
@@ -244,7 +242,7 @@ export class EngineClassWorkflow implements IEngine<BlackHole, Star, Particle> {
           starI.state = OBJ_STATE_NEW;
           starI.isSupernova = false;
           starI.supernovaState = 0;
-          game.score += SNV_EXPLOSION_SCORE;
+          frameView.score += SNV_EXPLOSION_SCORE;
         }
 
         continue;
@@ -274,7 +272,7 @@ export class EngineClassWorkflow implements IEngine<BlackHole, Star, Particle> {
               let alpha = 0;
 
               for (let k = 0; k < countForI; k++) {
-                const particle = game.particles.getNewObject();
+                const particle = world.particles.getNewObject();
                 particle.x = starI.x;
                 particle.y = starI.y;
 
@@ -289,7 +287,7 @@ export class EngineClassWorkflow implements IEngine<BlackHole, Star, Particle> {
               
               const countForJ = Math.floor(starJ.radius * random(PTC_AFTER_STR_EXPL_MIN_COUNT, PTC_AFTER_STR_EXPL_MAX_COUNT));
               for (let k = 0; k < countForJ; k++) {
-                const particle = game.particles.getNewObject();
+                const particle = world.particles.getNewObject();
                 particle.x = starJ.x;
                 particle.y = starJ.y;
 
@@ -349,30 +347,27 @@ export class EngineClassWorkflow implements IEngine<BlackHole, Star, Particle> {
     }
 
     // DEFRAGMENTATION PART
-    game.blackHoles.swapAndPop();
-    game.stars.swapAndPop();
-    game.particles.swapAndPop();
+    world.blackHoles.swapAndPop();
+    world.stars.swapAndPop();
+    world.particles.swapAndPop();
 
     // UPDATE PART
 
     // get new objects count, link on array still valid
-    blackHolesCount = game.blackHoles.activeCount;
-    starsCount = game.stars.activeCount;
-    particlesCount = game.particles.activeCount;
+    blackHolesCount = world.blackHoles.activeCount;
+    starsCount = world.stars.activeCount;
+    particlesCount = world.particles.activeCount;
 
     for (let i = 0; i < blackHolesCount; i++) {
-      const blackHole = blackHolesArray[i];
-      blackHole.update();
+      blackHolesArray[i].update();
     }
 
     for (let i = 0; i < starsCount; i++) {
-      const star = starsArray[i];
-      star.update();
+      starsArray[i].update();
     }
 
     for (let i = 0; i < particlesCount; i++) {
-      const particle = particlesArray[i];
-      particle.update();
+      particlesArray[i].update();
     }
   }
 }

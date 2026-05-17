@@ -1,5 +1,6 @@
-import type { Game } from "../Game";
+import type { IFrameView } from "../FrameView";
+import type { GameWorld } from "../world";
 
-export interface IEngine<BH, S, P> {
-  process(game: Game<BH, S, P>): void;
+export interface IEngine<W extends GameWorld> {
+  process(world: W, frameView: IFrameView): void;
 }

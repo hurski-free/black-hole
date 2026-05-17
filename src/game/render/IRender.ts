@@ -1,8 +1,8 @@
 import type { Translator } from "../../i18n";
-import type { Game } from "../Game";
+import type { ImmutableFrameView } from "../FrameView";
+import type { GameWorld } from "../world";
 
-export interface IRender<BH, S, P> {
+export interface IRender<W extends GameWorld> {
   readonly translator: Translator;
-
-  render(ctx: Game<BH, S, P>): void;
+  render(world: W, frameView: ImmutableFrameView): void;
 }

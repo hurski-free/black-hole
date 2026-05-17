@@ -1,13 +1,15 @@
 import type { Translator } from "../../i18n";
-import type { Game } from "../Game";
-import { WEBGL_BLACK_HOLE_POOL_CAPACITY, WEBGL_PARTICLE_POOL_CAPACITY, WEBGL_STAR_POOL_CAPACITY } from "../game-webgl.const";
+import type { ImmutableFrameView } from "../FrameView";
+import { WEBGL2_BLACK_HOLE_POOL_CAPACITY, WEBGL2_PARTICLE_POOL_CAPACITY, WEBGL2_STAR_POOL_CAPACITY } from "../game-webgl2.const";
 import type { vec4 } from "../math";
-import type { BlackHole } from "../objects/class/BlackHole";
-import type { Particle } from "../objects/class/Particle";
-import type { Star } from "../objects/class/Star";
 import { BH_SHOW_TIME_APPEAR_MIN_TIME } from "../objects/const";
-import type { GLProgram } from "../WebGL/WebGLProgram";
+import { blackHoleShader } from "../WebGL/shaders/BlackHoleShader";
+import { particleShader } from "../WebGL/shaders/ParticleShader";
+import { starShader } from "../WebGL/shaders/StarShader";
+import { textShader } from "../WebGL/shaders/TextShader";
+import { GLProgram } from "../WebGL/WebGLProgram";
 import { WebGLText } from "../WebGL/WebGLText";
+import type { AoSWorld } from "../world/AoSWorld";
 // import { BH_SHOW_TIME_APPEAR_MIN_TIME } from "../objects/const";
 import type { IRender } from "./IRender";
 
@@ -23,15 +25,9 @@ interface IDrawTextParams {
 export interface IWebGLRenderConfig {
   ctx: WebGL2RenderingContext;
   translator: Translator;
-  shaders: {
-    starShader: GLProgram;
-    particleShader: GLProgram;
-    blackHoleShader: GLProgram;
-    textShader: GLProgram;
-  };
 }
 
-export class WebGL2dRender implements IRender<BlackHole, Star, Particle> {
+export class WebGL2AosRender implements IRender<AoSWorld> {
   private _gl: WebGL2RenderingContext;
   readonly translator: Translator;
 
@@ -66,7 +62,12 @@ export class WebGL2dRender implements IRender<BlackHole, Star, Particle> {
 
     this._gl = gl;
     this.translator = cfg.translator;
-    this.shaders = cfg.shaders;
+    this.shaders = {
+      starShader: new GLProgram(gl, starShader),
+      particleShader: new GLProgram(gl, particleShader),
+      blackHoleShader: new GLProgram(gl, blackHoleShader),
+      textShader: new GLProgram(gl, textShader),
+    };
 
     gl.enable(gl.BLEND);
     gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
@@ -80,16 +81,16 @@ export class WebGL2dRender implements IRender<BlackHole, Star, Particle> {
       throw new Error('Failed to create buffers');
     }
 
-    this.blackHolesArrayBuffer = new Float32Array(WEBGL_BLACK_HOLE_POOL_CAPACITY * 3);
-    this.starsArrayBuffer = new Float32Array(WEBGL_STAR_POOL_CAPACITY * 6);
-    this.particlesArrayBuffer = new Float32Array(WEBGL_PARTICLE_POOL_CAPACITY * 3);
+    this.blackHolesArrayBuffer = new Float32Array(WEBGL2_BLACK_HOLE_POOL_CAPACITY * 3);
+    this.starsArrayBuffer = new Float32Array(WEBGL2_STAR_POOL_CAPACITY * 6);
+    this.particlesArrayBuffer = new Float32Array(WEBGL2_PARTICLE_POOL_CAPACITY * 3);
     this.textArrayBuffer = new Float32Array(this.maxTextGlyphs * 6 * 4);
 
     // setup VBO+VAO for black holes
     const blackHolesVao = gl.createVertexArray();
 
     gl.bindBuffer(gl.ARRAY_BUFFER, this.blackHolesVBO);
-    gl.bufferData(gl.ARRAY_BUFFER, WEBGL_BLACK_HOLE_POOL_CAPACITY * 3 * 4, gl.DYNAMIC_DRAW);
+    gl.bufferData(gl.ARRAY_BUFFER, WEBGL2_BLACK_HOLE_POOL_CAPACITY * 3 * 4, gl.DYNAMIC_DRAW);
 
     gl.bindVertexArray(blackHolesVao);
     
@@ -102,7 +103,7 @@ export class WebGL2dRender implements IRender<BlackHole, Star, Particle> {
     const starsVao = gl.createVertexArray();
 
     gl.bindBuffer(gl.ARRAY_BUFFER, this.starsVBO);
-    gl.bufferData(gl.ARRAY_BUFFER, WEBGL_STAR_POOL_CAPACITY * 6 * 4, gl.DYNAMIC_DRAW);
+    gl.bufferData(gl.ARRAY_BUFFER, WEBGL2_STAR_POOL_CAPACITY * 6 * 4, gl.DYNAMIC_DRAW);
 
     gl.bindVertexArray(starsVao);
     
@@ -119,7 +120,7 @@ export class WebGL2dRender implements IRender<BlackHole, Star, Particle> {
 
 
     gl.bindBuffer(gl.ARRAY_BUFFER, this.particlesVBO);
-    gl.bufferData(gl.ARRAY_BUFFER, WEBGL_PARTICLE_POOL_CAPACITY * 2 * 4, gl.DYNAMIC_DRAW);
+    gl.bufferData(gl.ARRAY_BUFFER, WEBGL2_PARTICLE_POOL_CAPACITY * 2 * 4, gl.DYNAMIC_DRAW);
   
     gl.bindVertexArray(particlesVao);
 
@@ -153,19 +154,19 @@ export class WebGL2dRender implements IRender<BlackHole, Star, Particle> {
     });
   }
 
-  render(game: Game<BlackHole, Star, Particle>): void {
+  render(world: AoSWorld, frameView: ImmutableFrameView): void {
     const gl = this._gl;
 
     gl.clearColor(0.0, 0.0, 0.0, 1.0);
     gl.clear(gl.COLOR_BUFFER_BIT);
 
-    const countBlackHoles = game.blackHoles.activeCount;
-    const countStars = game.stars.activeCount;
-    const countParticles = game.particles.activeCount;
+    const countBlackHoles = world.blackHoles.activeCount;
+    const countStars = world.stars.activeCount;
+    const countParticles = world.particles.activeCount;
 
-    const blackHolesArray = game.blackHoles.getArray();
-    const starsArray = game.stars.getArray();
-    const particlesArray = game.particles.getArray();
+    const blackHolesArray = world.blackHoles.getArray();
+    const starsArray = world.stars.getArray();
+    const particlesArray = world.particles.getArray();
 
     if (countParticles > 0) {
       for (let i = 0; i < countParticles; i++) {
@@ -180,8 +181,8 @@ export class WebGL2dRender implements IRender<BlackHole, Star, Particle> {
       const cameraLocation = gl.getUniformLocation(this.shaders.particleShader.program, 'u_camera');
       const projectionLocation = gl.getUniformLocation(this.shaders.particleShader.program, 'u_projection');
   
-      gl.uniform2f(cameraLocation, game.camera.x, game.camera.y);
-      gl.uniform2f(projectionLocation, 1.0 / game.width, 1.0 / game.height);
+      gl.uniform2f(cameraLocation, frameView.camera[0], frameView.camera[1]);
+      gl.uniform2f(projectionLocation, 1.0 / frameView.width, 1.0 / frameView.height);
   
       gl.bindBuffer(gl.ARRAY_BUFFER, this.particlesVBO);
       gl.bufferSubData(gl.ARRAY_BUFFER, 0, this.particlesArrayBuffer.subarray(0, countParticles * 2));
@@ -207,8 +208,8 @@ export class WebGL2dRender implements IRender<BlackHole, Star, Particle> {
       const cameraLocation = gl.getUniformLocation(this.shaders.starShader.program, 'u_camera');
       const projectionLocation = gl.getUniformLocation(this.shaders.starShader.program, 'u_projection');
   
-      gl.uniform2f(cameraLocation, game.camera.x, game.camera.y);
-      gl.uniform2f(projectionLocation, 1.0 / game.width, 1.0 / game.height);
+      gl.uniform2f(cameraLocation, frameView.camera[0], frameView.camera[1]);
+      gl.uniform2f(projectionLocation, 1.0 / frameView.width, 1.0 / frameView.height);
   
       gl.bindBuffer(gl.ARRAY_BUFFER, this.starsVBO);
       gl.bufferSubData(gl.ARRAY_BUFFER, 0, this.starsArrayBuffer.subarray(0, countStars * 6));
@@ -231,8 +232,8 @@ export class WebGL2dRender implements IRender<BlackHole, Star, Particle> {
       const cameraLocation = gl.getUniformLocation(this.shaders.blackHoleShader.program, 'u_camera');
       const projectionLocation = gl.getUniformLocation(this.shaders.blackHoleShader.program, 'u_projection');
   
-      gl.uniform2f(cameraLocation, game.camera.x, game.camera.y);
-      gl.uniform2f(projectionLocation, 1.0 / game.width, 1.0 / game.height);
+      gl.uniform2f(cameraLocation, frameView.camera[0], frameView.camera[1]);
+      gl.uniform2f(projectionLocation, 1.0 / frameView.width, 1.0 / frameView.height);
   
       gl.bindBuffer(gl.ARRAY_BUFFER, this.blackHolesVBO);
       gl.bufferSubData(gl.ARRAY_BUFFER, 0, this.blackHolesArrayBuffer.subarray(0, countBlackHoles * 3));
@@ -241,25 +242,25 @@ export class WebGL2dRender implements IRender<BlackHole, Star, Particle> {
       gl.drawArrays(gl.POINTS, 0, countBlackHoles);
     }
     
-    this.renderText(game, this.translator.t('game.score', { score: game.score.toFixed(3) }), { x: 16, y: 16 });
-    this.renderText(game, this.translator.t('game.stars', { count: countStars }), { x: 16, y: 46 });
-    this.renderText(game, this.translator.t('game.blackHoles', { count: countBlackHoles }), { x: 16, y: 76 });
+    this.renderText(frameView, this.translator.t('game.score', { score: frameView.score.toFixed(3) }), { x: 16, y: 16 });
+    this.renderText(frameView, this.translator.t('game.stars', { count: countStars }), { x: 16, y: 46 });
+    this.renderText(frameView, this.translator.t('game.blackHoles', { count: countBlackHoles }), { x: 16, y: 76 });
 
     // draw in bottom left corner
-    this.renderText(game, this.translator.t('game.particles', { count: countParticles }), { x: 16, y: game.height - 50 });
-    this.renderText(game, this.translator.t('game.particlesAbsorbedByBlackHoles', { count: game.particlesAbsorbedByBlackHoles }), { x: 16, y: game.height - 20 });
+    this.renderText(frameView, this.translator.t('game.particles', { count: countParticles }), { x: 16, y: frameView.height - 50 });
+    this.renderText(frameView, this.translator.t('game.particlesAbsorbedByBlackHoles', { count: frameView.particlesAbsorbedByBlackHoles }), { x: 16, y: frameView.height - 20 });
 
-    if (game.blackHoleTimeRemains <= BH_SHOW_TIME_APPEAR_MIN_TIME) {
-      const timeRemain = (game.blackHoleTimeRemains / 1000).toFixed(1); // round to 0.1 seconds
-      const blackHoleColor = game.blackHoleTimeRemains / BH_SHOW_TIME_APPEAR_MIN_TIME;
+    if (frameView.blackHoleTimeRemains <= BH_SHOW_TIME_APPEAR_MIN_TIME) {
+      const timeRemain = (frameView.blackHoleTimeRemains / 1000).toFixed(1); // round to 0.1 seconds
+      const blackHoleColor = frameView.blackHoleTimeRemains / BH_SHOW_TIME_APPEAR_MIN_TIME;
 
       const text = this.translator.t('game.blackHoleTimeRemains', { timeRemain });
       const textWidth = this.textRenderer.getTextWidth(text);
-      this.renderText(game, text, { x: game.halfWidth - textWidth / 2, y: game.height - 20, color: [1.0, blackHoleColor, blackHoleColor, 1.0] });
+      this.renderText(frameView, text, { x: frameView.halfWidth - textWidth / 2, y: frameView.height - 20, color: [1.0, blackHoleColor, blackHoleColor, 1.0] });
     }
   }
 
-  private renderText(game: Game<BlackHole, Star, Particle>, text: string, params: IDrawTextParams): void {
+  private renderText(frameView: ImmutableFrameView, text: string, params: IDrawTextParams): void {
     const gl = this._gl;
 
     const color = params.color ?? [1.0, 1.0, 1.0, 1.0];
@@ -315,7 +316,7 @@ export class WebGL2dRender implements IRender<BlackHole, Star, Particle> {
       const tintLocation = gl.getUniformLocation(this.shaders.textShader.program, 'u_tint');
       const textTextureLocation = gl.getUniformLocation(this.shaders.textShader.program, 'u_textTexture');
 
-      gl.uniform2f(projectionLocation, 1.0 / game.width, 1.0 / game.height);
+      gl.uniform2f(projectionLocation, 1.0 / frameView.width, 1.0 / frameView.height);
       gl.uniform4fv(tintLocation, color);
       gl.uniform1i(textTextureLocation, 0);
 

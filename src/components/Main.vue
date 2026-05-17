@@ -8,7 +8,7 @@ const { locale, t } = useI18n();
 
 const canvas2dSupported = ref(false);
 const webglSupported = ref(false);
-const activeMode = ref<'canvas2d' | 'webgl' | null>(null);
+const activeMode = ref<'canvas2d' | 'webgl2' | null>(null);
 
 onMounted(() => {
   const probe = document.createElement('canvas');
@@ -29,7 +29,7 @@ function startCanvas2d() {
 }
 
 function startWebgl() {
-  activeMode.value = 'webgl';
+  activeMode.value = 'webgl2';
 }
 
 function leaveGame() {
@@ -77,7 +77,7 @@ function leaveGame() {
           </section>
 
           <section class="card">
-            <h2 class="card-title">{{ t('main.webgl') }}</h2>
+            <h2 class="card-title">{{ t('main.webgl2') }}</h2>
             <p class="card-body">
               {{ t('main.supported') }}
               <span :class="webglSupported ? 'ok' : 'bad'">
@@ -97,12 +97,7 @@ function leaveGame() {
       </div>
     </template>
 
-    <Game
-      v-else
-      :mode="activeMode"
-      :auto-start="true"
-      @leave="leaveGame"
-    />
+    <Game v-else :render-mode="activeMode" @leave="leaveGame" />
   </main>
 </template>
 

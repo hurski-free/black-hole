@@ -8,7 +8,15 @@
     "build": "npm run build:prod",
     "build:dev": "vue-tsc -b && vite build --mode development",
     "build:prod": "vue-tsc -b && vite build --mode production",
+    "build:game": "cross-env NODE_ENV=production webpack --config webpack.game.cjs && dts-bundle-generator --export-referenced-types --no-check -o dist-game/index.d.ts src/game/index.ts --project tsconfig.game.json",
     "preview": "vite preview"
+  },
+  "exports": {
+    "./game": {
+      "types": "./dist/game/index.d.ts",
+      "import": "./dist/game/index.js",
+      "default": "./dist/game/index.js"
+    }
   },
   "dependencies": {
     "vue": "^3.5.32",
@@ -18,8 +26,13 @@
     "@types/node": "^24.12.2",
     "@vitejs/plugin-vue": "^6.0.6",
     "@vue/tsconfig": "^0.9.1",
+    "cross-env": "^7.0.3",
+    "dts-bundle-generator": "^9.5.1",
+    "ts-loader": "^9.5.4",
     "typescript": "~6.0.2",
     "vite": "^8.0.10",
-    "vue-tsc": "^3.2.7"
+    "vue-tsc": "^3.2.7",
+    "webpack": "^5.99.9",
+    "webpack-cli": "^6.0.1"
   }
 }

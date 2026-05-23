@@ -5,7 +5,7 @@ module.exports = {
   mode: process.env.NODE_ENV === 'production' ? 'production' : 'development',
   entry: path.resolve(__dirname, 'src/game/index.ts'),
   output: {
-    path: path.resolve(__dirname, 'dist-game'),
+    path: path.resolve(__dirname, 'dist-lib'),
     filename: 'index.js',
     library: {
       type: 'module',
@@ -27,7 +27,7 @@ module.exports = {
         test: /\.ts$/,
         loader: 'ts-loader',
         options: {
-          configFile: path.resolve(__dirname, 'tsconfig.game.json'),
+          configFile: path.resolve(__dirname, 'tsconfig.lib.json'),
         },
       },
     ],

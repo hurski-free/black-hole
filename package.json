@@ -8,15 +8,8 @@
     "build": "npm run build:prod",
     "build:dev": "vue-tsc -b && vite build --mode development",
     "build:prod": "vue-tsc -b && vite build --mode production",
-    "build:game": "cross-env NODE_ENV=production webpack --config webpack.game.cjs && dts-bundle-generator --export-referenced-types --no-check -o dist-game/index.d.ts src/game/index.ts --project tsconfig.game.json",
+    "build:lib": "cross-env NODE_ENV=production webpack --config webpack.lib.cjs && dts-bundle-generator --export-referenced-types --no-check -o dist-lib/index.d.ts src/game/index.ts --project tsconfig.lib.json",
     "preview": "vite preview"
-  },
-  "exports": {
-    "./game": {
-      "types": "./dist/game/index.d.ts",
-      "import": "./dist/game/index.js",
-      "default": "./dist/game/index.js"
-    }
   },
   "dependencies": {
     "vue": "^3.5.32",

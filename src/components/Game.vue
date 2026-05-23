@@ -3,10 +3,7 @@ import { ref, shallowRef, onMounted, onBeforeUnmount, nextTick } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { i18n } from '../i18n';
 
-import { createGame } from '../game/fabric';
-
-import type { Game } from '../game/Game';
-import type { GameWorld } from '../game/world';
+import { type Game, type GameWorld, createGame } from '../game';
 
 const { t } = useI18n();
 

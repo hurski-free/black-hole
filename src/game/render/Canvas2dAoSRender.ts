@@ -83,19 +83,19 @@ export class Canvas2dAoSRender implements IRender<AoSWorld> {
 
     ctx.fillStyle = 'white';
     ctx.font = '700 24px Inter, Arial, sans-serif';
-    ctx.fillText(this.translator.t('game.score', { score: gameSession.score.toFixed(3) }), 16, 26);
-    ctx.fillText(this.translator.t('game.stars', { count: countStars }), 16, 56);
-    ctx.fillText(this.translator.t('game.blackHoles', { count: countBlackHoles }), 16, 86);
+    ctx.fillText(this.translator.t('blackHoleGame.score', { score: gameSession.score.toFixed(3) }), 16, 26);
+    ctx.fillText(this.translator.t('blackHoleGame.stars', { count: countStars }), 16, 56);
+    ctx.fillText(this.translator.t('blackHoleGame.blackHoles', { count: countBlackHoles }), 16, 86);
 
     // draw in bottom left corner
-    ctx.fillText(this.translator.t('game.particles', { count: countParticles }), 16, frameView.height - 32);
-    ctx.fillText(this.translator.t('game.particlesAbsorbedByBlackHoles', { count: gameSession.particlesAbsorbedByBlackHoles }), 16, frameView.height - 4);
+    ctx.fillText(this.translator.t('blackHoleGame.particles', { count: countParticles }), 16, frameView.height - 32);
+    ctx.fillText(this.translator.t('blackHoleGame.particlesAbsorbedByBlackHoles', { count: gameSession.particlesAbsorbedByBlackHoles }), 16, frameView.height - 4);
 
     if (gameSession.blackHoleTimeRemains <= BH_SHOW_TIME_APPEAR_MIN_TIME) {
       const timeRemain = (gameSession.blackHoleTimeRemains / 1000).toFixed(1); // round to 0.1 seconds
       const blackHoleColor = Math.round(255 * gameSession.blackHoleTimeRemains / BH_SHOW_TIME_APPEAR_MIN_TIME);
       ctx.fillStyle = `rgb(${255},${blackHoleColor},${blackHoleColor})`;
-      const text = this.translator.t('game.blackHoleTimeRemains', { timeRemain });
+      const text = this.translator.t('blackHoleGame.blackHoleTimeRemains', { timeRemain });
       const textWidth = ctx.measureText(text).width;
 
       ctx.fillText(text, frameView.halfWidth - textWidth / 2, frameView.height - 10);

@@ -243,19 +243,19 @@ export class WebGL2AosRender implements IRender<AoSWorld> {
       gl.drawArrays(gl.POINTS, 0, countBlackHoles);
     }
     
-    this.renderText(frameView, this.translator.t('game.score', { score: gameSession.score.toFixed(3) }), { x: 16, y: 16 });
-    this.renderText(frameView, this.translator.t('game.stars', { count: countStars }), { x: 16, y: 46 });
-    this.renderText(frameView, this.translator.t('game.blackHoles', { count: countBlackHoles }), { x: 16, y: 76 });
+    this.renderText(frameView, this.translator.t('blackHoleGame.score', { score: gameSession.score.toFixed(3) }), { x: 16, y: 16 });
+    this.renderText(frameView, this.translator.t('blackHoleGame.stars', { count: countStars }), { x: 16, y: 46 });
+    this.renderText(frameView, this.translator.t('blackHoleGame.blackHoles', { count: countBlackHoles }), { x: 16, y: 76 });
 
     // draw in bottom left corner
-    this.renderText(frameView, this.translator.t('game.particles', { count: countParticles }), { x: 16, y: frameView.height - 50 });
-    this.renderText(frameView, this.translator.t('game.particlesAbsorbedByBlackHoles', { count: gameSession.particlesAbsorbedByBlackHoles }), { x: 16, y: frameView.height - 20 });
+    this.renderText(frameView, this.translator.t('blackHoleGame.particles', { count: countParticles }), { x: 16, y: frameView.height - 50 });
+    this.renderText(frameView, this.translator.t('blackHoleGame.particlesAbsorbedByBlackHoles', { count: gameSession.particlesAbsorbedByBlackHoles }), { x: 16, y: frameView.height - 20 });
 
     if (gameSession.blackHoleTimeRemains <= BH_SHOW_TIME_APPEAR_MIN_TIME) {
       const timeRemain = (gameSession.blackHoleTimeRemains / 1000).toFixed(1); // round to 0.1 seconds
       const blackHoleColor = gameSession.blackHoleTimeRemains / BH_SHOW_TIME_APPEAR_MIN_TIME;
 
-      const text = this.translator.t('game.blackHoleTimeRemains', { timeRemain });
+      const text = this.translator.t('blackHoleGame.blackHoleTimeRemains', { timeRemain });
       const textWidth = this.textRenderer.getTextWidth(text);
       this.renderText(frameView, text, { x: frameView.halfWidth - textWidth / 2, y: frameView.height - 20, color: [1.0, blackHoleColor, blackHoleColor, 1.0] });
     }

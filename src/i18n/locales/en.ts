@@ -17,11 +17,13 @@ export default {
     pauseResume: 'Pause / Resume (Space)',
     stopStart: 'Stop / Start (Enter)',
     restart: 'Restart',
+  },
+  blackHoleGame: {
     score: 'Score: {score}',
     stars: 'Stars: {count}',
     blackHoles: 'Black holes: {count}',
     particles: 'Particles: {count}',
     particlesAbsorbedByBlackHoles: 'Particles absorbed by black holes: {count}',
     blackHoleTimeRemains: 'Black hole time remains: {timeRemain}',
-  },
+  }
 };

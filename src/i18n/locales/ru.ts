@@ -17,11 +17,13 @@ export default {
     pauseResume: 'Пауза / Продолжить (Пробел)',
     stopStart: 'Стоп / Старт (Enter)',
     restart: 'Перезапуск',
+  },
+  blackHoleGame: {
     score: 'Очки: {score}',
     stars: 'Звезды: {count}',
     blackHoles: 'Чёрные дыры: {count}',
     particles: 'Частицы: {count}',
     particlesAbsorbedByBlackHoles: 'Частицы поглощены чёрными дырами: {count}',
     blackHoleTimeRemains: 'Время до появления чёрной дыры: {timeRemain}',
-  },
+  }
 };

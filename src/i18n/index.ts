@@ -27,4 +27,4 @@ export const i18n = createI18n({
 });
 
 export type SupportedLanguages = 'en' | 'ru';
-export type Translator = typeof i18n.global;
+export type Translator = { t: (key: string, args?: Record<string, unknown>) => string };

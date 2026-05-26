@@ -143,6 +143,10 @@ export class Game<W extends GameWorld> {
       this.frameView.camera[0] = -this.frameView.halfWidth;
       this.frameView.camera[1] = -this.frameView.halfHeight;
     }
+
+    if (this.gameSession.gameState === 'paused') {
+      this.renderer.render(this.world, this.frameView, this.gameSession);
+    }
   }
 
   cameraMove(deltaX: number, deltaY: number) {
